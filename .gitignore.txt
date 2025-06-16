@@ -1,0 +1,4 @@
+# ARQUIVOS IGNORADOS (NÃO ENVIADOS PARA O GITHUB)
+config.js          # Arquivo com suas chaves secretas
+node_modules/      # Pasta de dependências (se tiver)
+.env               # Arquivos de configuração sensíveis
