@@ -260,6 +260,26 @@
       z-index: 1000;
     }
     
+    /* Serviços do salão */
+    .servicos-container {
+      margin-top: 20px;
+    }
+    
+    .servico-item {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    
+    .servico-item input {
+      flex: 1;
+      margin-right: 10px;
+    }
+    
+    .servico-item .btn {
+      width: auto;
+      padding: 10px;
+    }
+    
     @media (max-width: 768px) {
       .col-md-6 {
         flex: 0 0 100%;
@@ -278,6 +298,15 @@
       .tab.active {
         border-bottom: none;
         border-left-color: var(--primary);
+      }
+      
+      .servico-item {
+        flex-direction: column;
+      }
+      
+      .servico-item input {
+        margin-right: 0;
+        margin-bottom: 5px;
       }
     }
   </style>
@@ -319,11 +348,7 @@
             <label for="servico">Serviço</label>
             <select id="servico" class="form-control" required>
               <option value="">Escolha um serviço</option>
-              <option value="Corte Simples - R$25">Corte Simples - R$25</option>
-              <option value="Corte Degradê - R$30">Corte Degradê - R$30</option>
-              <option value="Corte e Barba - R$40">Corte e Barba - R$40</option>
-              <option value="Barba - R$20">Barba - R$20</option>
-              <option value="Sobrancelha - R$15">Sobrancelha - R$15</option>
+              <!-- Os serviços serão carregados dinamicamente -->
             </select>
           </div>
           
@@ -483,6 +508,30 @@
               </div>
             </div>
             
+            <div class="form-group">
+              <label>Dias de Funcionamento</label>
+              <div class="row">
+                <div class="col-md-12">
+                  <label style="display: inline-block; margin-right: 15px;">
+                    <input type="checkbox" id="domingo" checked> Domingo
+                  </label>
+                  <label style="display: inline-block; margin-right: 15px;">
+                    <input type="checkbox" id="feriados"> Feriados
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group servicos-container">
+              <label>Serviços do Salão</label>
+              <div id="servicos-salao">
+                <!-- Serviços serão adicionados aqui -->
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="adicionarServico()">
+                <i class="fas fa-plus"></i> Adicionar Serviço
+              </button>
+            </div>
+            
             <button type="submit" class="btn btn-success btn-block">
               <i class="fas fa-save"></i> CADASTRAR SALÃO
             </button>
@@ -532,7 +581,7 @@
     // Inicializa o IndexedDB
     function initDB() {
       return new Promise((resolve) => {
-        const request = indexedDB.open('SalaoAgendamentosDB', 1);
+        const request = indexedDB.open('SalaoAgendamentosDB', 2); // Versão 2 para adicionar serviços
         
         request.onupgradeneeded = (event) => {
           const db = event.target.result;
@@ -712,20 +761,27 @@
     
     // Função para carregar horários disponíveis
     function carregarHorariosDisponiveis(data) {
-      // Verifica se é domingo
       const dateObj = new Date(data);
-      if (dateObj.getDay() === 0) {
+      const salaoId = getSalaoIdFromUrl();
+      const salao = saloes.find(s => s.id === salaoId);
+      
+      // Verifica se é domingo e se o salão funciona aos domingos
+      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
         document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
         return;
       }
       
+      // Verifica se é feriado e se o salão funciona em feriados
+      // (Implementação de verificação de feriados seria mais complexa)
+      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
+        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
+        return;
+      }
+      
       // Busca os agendamentos do dia
-      const salaoId = getSalaoIdFromUrl();
       const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
       
       // Obtém o horário de funcionamento do salão
-      const salao = saloes.find(s => s.id === salaoId);
-      
       const abertura = salao ? salao.abertura : '08:00';
       const fechamento = salao ? salao.fechamento : '20:00';
       
@@ -825,6 +881,28 @@
       }
     });
     
+    // Função para adicionar campo de serviço
+    function adicionarServico(nome = '', valor = '') {
+      const container = document.getElementById('servicos-salao');
+      const div = document.createElement('div');
+      div.className = 'servico-item';
+      
+      div.innerHTML = `
+        <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="${nome}">
+        <input type="text" class="form-control servico-valor" placeholder="Valor (ex: R$ 30,00)" value="${valor}">
+        <button type="button" class="btn btn-danger" onclick="removerServico(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      
+      container.appendChild(div);
+    }
+    
+    // Função para remover campo de serviço
+    function removerServico(btn) {
+      btn.parentElement.remove();
+    }
+    
     // Cadastro de novo salão
     document.getElementById('cadastro-salao-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -835,6 +913,19 @@
       const senha = document.getElementById('senha-salao-cadastro').value;
       const abertura = document.getElementById('abertura').value;
       const fechamento = document.getElementById('fechamento').value;
+      const funcionaDomingo = document.getElementById('domingo').checked;
+      const funcionaFeriado = document.getElementById('feriados').checked;
+      
+      // Coleta os serviços cadastrados
+      const servicos = [];
+      document.querySelectorAll('.servico-item').forEach(item => {
+        const nome = item.querySelector('.servico-nome').value.trim();
+        const valor = item.querySelector('.servico-valor').value.trim();
+        
+        if (nome && valor) {
+          servicos.push({ nome, valor });
+        }
+      });
       
       // Cria o objeto do salão
       const novoSalao = {
@@ -846,7 +937,11 @@
         horario: `${abertura} - ${fechamento}`,
         abertura,
         fechamento,
-        dataCriacao: new Date().toISOString()
+        funcionaDomingo,
+        funcionaFeriado,
+        servicos,
+        dataCriacao: new Date().toISOString(),
+        urlPersonalizada: gerarUrlPersonalizada(nome)
       };
       
       // Adiciona ao array de salões
@@ -861,8 +956,17 @@
       alert(mensagem);
       
       document.getElementById('cadastro-salao-form').reset();
+      document.getElementById('servicos-salao').innerHTML = '';
       await carregarSaloes();
     });
+    
+    // Função para gerar URL personalizada
+    function gerarUrlPersonalizada(nome) {
+      return nome.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
+        .replace(/\s+/g, '-') // Substitui espaços por hífens
+        .replace(/[^a-z0-9-]/g, ''); // Remove caracteres especiais
+    }
     
     // Função para obter o ID do salão da URL
     function getSalaoIdFromUrl() {
@@ -872,7 +976,12 @@
     
     // Função para gerar link único para o salão
     function gerarLinkSalão(salaoId) {
+      const salao = saloes.find(s => s.id === salaoId);
       const urlBase = window.location.href.split('?')[0];
+      
+      if (salao?.urlPersonalizada) {
+        return `${urlBase}?salao=${salaoId}&nome=${salao.urlPersonalizada}`;
+      }
       return `${urlBase}?salao=${salaoId}`;
     }
     
@@ -965,6 +1074,39 @@
       });
     }
     
+    // Função para carregar serviços do salão na área pública
+    function carregarServicosSalao(salaoId) {
+      const selectServico = document.getElementById('servico');
+      selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
+      
+      const salao = saloes.find(s => s.id === salaoId);
+      
+      if (salao?.servicos?.length > 0) {
+        salao.servicos.forEach(servico => {
+          const option = document.createElement('option');
+          option.value = `${servico.nome} - ${servico.valor}`;
+          option.textContent = `${servico.nome} - ${servico.valor}`;
+          selectServico.appendChild(option);
+        });
+      } else {
+        // Serviços padrão caso o salão não tenha serviços cadastrados
+        const servicosPadrao = [
+          'Corte Simples - R$25',
+          'Corte Degradê - R$30',
+          'Corte e Barba - R$40',
+          'Barba - R$20',
+          'Sobrancelha - R$15'
+        ];
+        
+        servicosPadrao.forEach(servico => {
+          const option = document.createElement('option');
+          option.value = servico;
+          option.textContent = servico;
+          selectServico.appendChild(option);
+        });
+      }
+    }
+    
     // Função para cancelar agendamento
     async function cancelarAgendamento(id) {
       if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
@@ -980,12 +1122,23 @@
       const salao = saloes.find(s => s.id === id);
       if (!salao) return;
       
+      // Preenche o formulário com os dados do salão
       document.getElementById('nome-salao').value = salao.nome;
       document.getElementById('endereco-salao').value = salao.endereco;
       document.getElementById('email-salao-cadastro').value = salao.email;
       document.getElementById('senha-salao-cadastro').value = salao.senha;
       document.getElementById('abertura').value = salao.abertura;
       document.getElementById('fechamento').value = salao.fechamento;
+      document.getElementById('domingo').checked = salao.funcionaDomingo || false;
+      document.getElementById('feriados').checked = salao.funcionaFeriado || false;
+      
+      // Limpa e recria os campos de serviços
+      document.getElementById('servicos-salao').innerHTML = '';
+      if (salao.servicos?.length > 0) {
+        salao.servicos.forEach(servico => {
+          adicionarServico(servico.nome, servico.valor);
+        });
+      }
       
       // Remove o salão da lista para evitar duplicação
       saloes = saloes.filter(s => s.id !== id);
@@ -1091,6 +1244,7 @@
         const salaoSelecionado = saloes.find(s => s.id === salaoId);
         if (salaoSelecionado) {
           document.getElementById('salao-nome').textContent = salaoSelecionado.nome;
+          carregarServicosSalao(salaoId);
         }
       }
       
@@ -1106,7 +1260,16 @@
             horario: '08:00 - 20:00',
             abertura: '08:00',
             fechamento: '20:00',
-            dataCriacao: new Date().toISOString()
+            funcionaDomingo: true,
+            funcionaFeriado: false,
+            servicos: [
+              { nome: 'Corte Simples', valor: 'R$ 25,00' },
+              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
+              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
+              { nome: 'Barba', valor: 'R$ 20,00' }
+            ],
+            dataCriacao: new Date().toISOString(),
+            urlPersonalizada: 'alicon-cortes-matriz'
           },
           {
             id: '2',
@@ -1117,7 +1280,15 @@
             horario: '09:00 - 19:00',
             abertura: '09:00',
             fechamento: '19:00',
-            dataCriacao: new Date().toISOString()
+            funcionaDomingo: false,
+            funcionaFeriado: false,
+            servicos: [
+              { nome: 'Corte Simples', valor: 'R$ 20,00' },
+              { nome: 'Corte Degradê', valor: 'R$ 25,00' },
+              { nome: 'Sobrancelha', valor: 'R$ 15,00' }
+            ],
+            dataCriacao: new Date().toISOString(),
+            urlPersonalizada: 'alicon-cortes-filial'
           }
         ];
         await salvarDados('saloes', saloes);
@@ -1151,18 +1322,6 @@
         await salvarDados('agendamentos', agendamentos);
       }
     });
-  </script><body>
-  <!-- Todo o conteúdo da sua página aqui -->
-  <!-- ✅✅✅ SCRIPT NO FINAL DO BODY (CORRETO) ✅✅✅ -->
-  <script>
-    // Configurações JSONBin (OCULTAS)
-    const JSONBIN_API_KEY = '$2a$10$b8s!OGWINXkS/KH313Mwww.ifaiVUYgKXknESKL_R4lcPokrRxLy6G';
-    const JSONBIN_BIN_ID = '684efe118960c979a5aa6291';
-    const API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
-    // Seu código JavaScript continua aqui...
-    function confirmarAgendamento() {
-      console.log('Usando:', API_URL); // Teste no console (F12)
-    }
   </script>
 </body>
 </html>
