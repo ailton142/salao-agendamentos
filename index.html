@@ -602,230 +602,89 @@
     }
     
     // CADASTRO DE SALÃO CORRIGIDO (VERSÃO FUNCIONAL)
-    document.getElementById('cadastro-salao-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const nome = document.getElementById('nome-salao').value;
-      const endereco = document.getElementById('endereco-salao').value;
-      const email = document.getElementById('email-salao-cadastro').value.trim().toLowerCase();
-      const senha = document.getElementById('senha-salao-cadastro').value;
-      const abertura = document.getElementById('abertura').value;
-      const fechamento = document.getElementById('fechamento').value;
-      
-      // Validação básica do e-mail
-      if (!email || email.indexOf('@') === -1) {
-        alert('Por favor, insira um e-mail válido');
-        return;
-      }
-      
-      // Coletar dias de funcionamento
-      const diasCheckboxes = document.querySelectorAll('input[name="dias-funcionamento"]:checked');
-      const diasFuncionamento = Array.from(diasCheckboxes).map(cb => cb.value);
-      
-      // Coletar serviços
-      const servicosItems = document.querySelectorAll('.servico-item');
-      const servicos = Array.from(servicosItems).map(item => {
-        const nome = item.querySelector('.servico-nome').value.trim();
-        const preco = parseFloat(item.querySelector('.servico-preco').value);
-        return `${nome} - R$${preco.toFixed(2)}`;
-      }).filter(servico => servico && !servico.includes('undefined'));
-      
-      if (servicos.length === 0) {
-        alert('Adicione pelo menos um serviço válido');
-        return;
-      }
-      
-      // VERIFICAÇÃO CORRIGIDA (agora funciona corretamente)
-      const emailExistente = saloes.some(s => s.email.toLowerCase() === email.toLowerCase());
-      
-      if (emailExistente) {
-        alert('Este e-mail já está cadastrado para outro salão.');
-        return;
-      }
-      
-      // Cria o objeto do salão
-      const novoSalao = {
-        id: Date.now().toString(),
-        nome,
-        endereco,
-        email,
-        senha,
-        horario: `${abertura} - ${fechamento}`,
-        abertura,
-        fechamento,
-        diasFuncionamento,
-        servicos,
-        dataCriacao: new Date().toISOString()
-      };
-      
-      try {
-        // Adiciona ao array de salões
-        saloes.push(novoSalao);
-        await salvarDados('saloes', saloes);
-        
-        // Gera o link único para o salão
-        const linkSalão = gerarLinkSalão(novoSalao.id);
-        
-        // Mostra mensagem de sucesso
-        alert(`Salão "${nome}" cadastrado com sucesso!\n\nLink de acesso: ${linkSalão}`);
-        
-        // Limpa o formulário
-        document.getElementById('cadastro-salao-form').reset();
-        document.getElementById('servicos-container').innerHTML = `
-          <div class="servico-item">
-            <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="Corte">
-            <input type="number" class="form-control servico-preco" placeholder="Preço" value="20.00" step="0.01">
-          </div>
-        `;
-        
-        // Recarrega a lista de salões
-        await carregarSaloes();
-      } catch (error) {
-        console.error('Erro ao cadastrar salão:', error);
-        alert('Erro ao cadastrar salão. Por favor, tente novamente.');
-      }
-    });
+  document.getElementById('cadastro-salao-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Coleta dos dados do formulário
+  const nome = document.getElementById('nome-salao').value;
+  const endereco = document.getElementById('endereco-salao').value;
+  const email = document.getElementById('email-salao-cadastro').value.trim().toLowerCase(); // Normaliza o e-mail
+  const senha = document.getElementById('senha-salao-cadastro').value;
+  const abertura = document.getElementById('abertura').value;
+  const fechamento = document.getElementById('fechamento').value;
+
+  // Validação básica do e-mail
+  if (!email || !email.includes('@')) {
+    alert('Por favor, insira um e-mail válido!');
+    return;
+  }
+
+  // Verificação CORRIGIDA de e-mail existente (case insensitive)
+  const emailExistente = saloes.some(s => s.email.toLowerCase() === email);
+  
+  if (emailExistente) {
+    alert('Este e-mail já está cadastrado para outro salão.');
+    return;
+  }
+
+  // Coleta de dias de funcionamento
+  const diasCheckboxes = document.querySelectorAll('input[name="dias-funcionamento"]:checked');
+  const diasFuncionamento = Array.from(diasCheckboxes).map(cb => cb.value);
+
+  // Coleta de serviços
+  const servicosItems = document.querySelectorAll('.servico-item');
+  const servicos = Array.from(servicosItems).map(item => {
+    const nomeServico = item.querySelector('.servico-nome').value.trim();
+    const preco = parseFloat(item.querySelector('.servico-preco').value);
+    return `${nomeServico} - R$${preco.toFixed(2)}`;
+  }).filter(servico => servico && !servico.includes('undefined'));
+
+  // Validação de serviços
+  if (servicos.length === 0) {
+    alert('Adicione pelo menos um serviço válido!');
+    return;
+  }
+
+  // Cria o objeto do salão
+  const novoSalao = {
+    id: Date.now().toString(),
+    nome,
+    endereco,
+    email,
+    senha,
+    horario: `${abertura} - ${fechamento}`,
+    abertura,
+    fechamento,
+    diasFuncionamento,
+    servicos,
+    dataCriacao: new Date().toISOString()
+  };
+
+  try {
+    // Adiciona ao array de salões e salva
+    saloes.push(novoSalao);
+    await salvarDados('saloes', saloes);
     
-    // Função para obter o ID do salão da URL
-    function getSalaoIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('salao');
-    }
+    // Feedback de sucesso
+    const linkSalão = gerarLinkSalão(novoSalao.id);
+    alert(`Salão "${nome}" cadastrado com sucesso!\n\nLink de acesso: ${linkSalão}`);
     
-    // Função para gerar link único para o salão
-    function gerarLinkSalão(salaoId) {
-      const urlBase = window.location.href.split('?')[0];
-      return `${urlBase}?salao=${salaoId}`;
-    }
+    // Limpa o formulário
+    document.getElementById('cadastro-salao-form').reset();
+    document.getElementById('servicos-container').innerHTML = `
+      <div class="servico-item">
+        <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="Corte">
+        <input type="number" class="form-control servico-preco" placeholder="Preço" value="20.00" step="0.01">
+      </div>
+    `;
     
-    // Função para copiar texto para a área de transferência
-    function copiarParaAreaTransferencia(texto) {
-      const textarea = document.createElement('textarea');
-      textarea.value = texto;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      alert('Link copiado para a área de transferência!');
-    }
-    
-    // Função para carregar agendamentos do salão
-    async function carregarAgendamentosSalao(salaoId) {
-      const tbody = document.querySelector('#tabela-agendamentos tbody');
-      tbody.innerHTML = '';
-      
-      let agendamentosDoSalão = agendamentos.filter(ag => ag.salaoId === salaoId);
-      
-      const agendamentosOrdenados = agendamentosDoSalão.sort((a, b) => {
-        const dataA = new Date(`${a.data} ${a.hora}`);
-        const dataB = new Date(`${b.data} ${b.hora}`);
-        return dataA - dataB;
-      });
-      
-      const filtroData = document.getElementById('filtrar-data').value;
-      const agendamentosFiltrados = filtroData 
-        ? agendamentosOrdenados.filter(ag => ag.data === filtroData)
-        : agendamentosOrdenados;
-      
-      agendamentosFiltrados.forEach(ag => {
-        const tr = document.createElement('tr');
-        
-        tr.innerHTML = `
-          <td>${formatarData(ag.data)}</td>
-          <td>${ag.hora}</td>
-          <td>${ag.nome}</td>
-          <td>${ag.servico}</td>
-          <td>${ag.telefone}</td>
-          <td>
-            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
-              <i class="fas fa-times"></i> Cancelar
-            </button>
-          </td>
-        `;
-        
-        tbody.appendChild(tr);
-      });
-    }
-    
-    // Função para carregar salões
-    async function carregarSaloes() {
-      const tbody = document.querySelector('#tabela-saloes tbody');
-      tbody.innerHTML = '';
-      
-      saloes.forEach(salao => {
-        const tr = document.createElement('tr');
-        
-        const linkSalão = gerarLinkSalão(salao.id);
-        
-        tr.innerHTML = `
-          <td>${salao.nome}</td>
-          <td>${salao.endereco}</td>
-          <td>${salao.email}</td>
-          <td>${salao.horario}</td>
-          <td>
-            <button onclick="editarSalao('${salao.id}')" class="btn btn-secondary btn-sm">
-              <i class="fas fa-edit"></i> Editar
-            </button>
-            <button onclick="excluirSalao('${salao.id}')" class="btn btn-danger btn-sm">
-              <i class="fas fa-trash"></i> Excluir
-            </button>
-            <div class="salao-link">
-              Link do salão: ${linkSalão}
-              <span class="copy-link" onclick="copiarParaAreaTransferencia('${linkSalão}')">
-                <i class="fas fa-copy"></i> Copiar
-              </span>
-            </div>
-          </td>
-        `;
-        
-        tbody.appendChild(tr);
-      });
-    }
-    
-    // Função para cancelar agendamento
-    async function cancelarAgendamento(id) {
-      if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
-        agendamentos = agendamentos.filter(ag => ag.id !== id);
-        await salvarDados('agendamentos', agendamentos);
-        await carregarAgendamentosSalao(currentUser.salaoId);
-        alert('Agendamento cancelado com sucesso!');
-      }
-    }
-    
-    // Função para editar salão
-    async function editarSalao(id) {
-      const salao = saloes.find(s => s.id === id);
-      if (!salao) return;
-      
-      document.getElementById('nome-salao').value = salao.nome;
-      document.getElementById('endereco-salao').value = salao.endereco;
-      document.getElementById('email-salao-cadastro').value = salao.email;
-      document.getElementById('senha-salao-cadastro').value = salao.senha;
-      document.getElementById('abertura').value = salao.abertura;
-      document.getElementById('fechamento').value = salao.fechamento;
-      
-      document.querySelectorAll('input[name="dias-funcionamento"]').forEach(checkbox => {
-        checkbox.checked = salao.diasFuncionamento.includes(checkbox.value);
-      });
-      
-      const servicosContainer = document.getElementById('servicos-container');
-      servicosContainer.innerHTML = '';
-      
-      salao.servicos.forEach(servico => {
-        const [nome, precoStr] = servico.split(' - R$');
-        const preco = parseFloat(precoStr);
-        
-        const servicoItem = document.createElement('div');
-        servicoItem.className = 'servico-item';
-        servicoItem.innerHTML = `
-          <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="${nome}">
-          <input type="number" class="form-control servico-preco" placeholder="Preço" value="${preco}" step="0.01">
-          <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">
-            <i class="fas fa-trash"></i>
-          </button>
-        `;
-        servicosContainer.appendChild(servicoItem);
-      });
+    // Atualiza a lista de salões
+    await carregarSaloes();
+  } catch (error) {
+    console.error('Erro ao cadastrar:', error);
+    alert('Erro ao cadastrar. Tente novamente.');
+  }
+});
       
       saloes = saloes.filter(s => s.id !== id);
       await salvarDados('saloes', saloes);
