@@ -259,6 +259,18 @@
       z-index: 1000;
     }
     
+    /* Estilos para serviços */
+    .servico-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    
+    .servico-item input {
+      flex: 1;
+    }
+    
     @media (max-width: 768px) {
       .col-md-6 {
         flex: 0 0 100%;
@@ -277,6 +289,10 @@
       .tab.active {
         border-bottom: none;
         border-left-color: var(--primary);
+      }
+      
+      .servico-item {
+        flex-direction: column;
       }
     }
   </style>
@@ -318,11 +334,6 @@
             <label for="servico">Serviço</label>
             <select id="servico" class="form-control" required>
               <option value="">Escolha um serviço</option>
-              <option value="Corte Simples - R$25">Corte Simples - R$25</option>
-              <option value="Corte Degradê - R$30">Corte Degradê - R$30</option>
-              <option value="Corte e Barba - R$40">Corte e Barba - R$40</option>
-              <option value="Barba - R$20">Barba - R$20</option>
-              <option value="Sobrancelha - R$15">Sobrancelha - R$15</option>
             </select>
           </div>
           
@@ -464,7 +475,7 @@
             </div>
             
             <div class="form-group">
-              <label for="horario-funcionamento">Horário de Funcionamento</label>
+              <label>Horário de Funcionamento</label>
               <div class="row">
                 <div class="col-md-6">
                   <select id="abertura" class="form-control" required>
@@ -478,10 +489,36 @@
                     <option value="18:00">18:00</option>
                     <option value="19:00">19:00</option>
                     <option value="20:00">20:00</option>
-                    <option value="21:00">21:00</option>
                   </select>
                 </div>
               </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Dias de Funcionamento</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <label><input type="checkbox" name="dias-funcionamento" value="segunda" checked> Segunda</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="terca" checked> Terça</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="quarta" checked> Quarta</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="quinta" checked> Quinta</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="sexta" checked> Sexta</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="sabado" checked> Sábado</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="domingo"> Domingo</label>
+                <label><input type="checkbox" name="dias-funcionamento" value="feriados"> Feriados</label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Serviços do Salão</label>
+              <div id="servicos-container">
+                <div class="servico-item">
+                  <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="Corte">
+                  <input type="number" class="form-control servico-preco" placeholder="Preço" value="20.00" step="0.01">
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="adicionarServico()" style="margin-top: 10px;">
+                <i class="fas fa-plus"></i> Adicionar Serviço
+              </button>
             </div>
             
             <button type="submit" class="btn btn-success btn-block">
@@ -826,7 +863,22 @@
       }
     });
     
-    // Cadastro de novo salão - CORREÇÃO: Adicionado async e await
+    // Função para adicionar novo campo de serviço
+    function adicionarServico() {
+      const container = document.getElementById('servicos-container');
+      const novoServico = document.createElement('div');
+      novoServico.className = 'servico-item';
+      novoServico.innerHTML = `
+        <input type="text" class="form-control servico-nome" placeholder="Nome do serviço">
+        <input type="number" class="form-control servico-preco" placeholder="Preço" step="0.01">
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      container.appendChild(novoServico);
+    }
+    
+    // Cadastro de novo salão - Versão corrigida
     document.getElementById('cadastro-salao-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -837,8 +889,26 @@
       const abertura = document.getElementById('abertura').value;
       const fechamento = document.getElementById('fechamento').value;
       
-      // Verifica se o e-mail já está cadastrado
-      const emailExistente = saloes.some(s => s.email === email);
+      // Coletar dias de funcionamento
+      const diasCheckboxes = document.querySelectorAll('input[name="dias-funcionamento"]:checked');
+      const diasFuncionamento = Array.from(diasCheckboxes).map(cb => cb.value);
+      
+      // Coletar serviços
+      const servicosItems = document.querySelectorAll('.servico-item');
+      const servicos = Array.from(servicosItems).map(item => {
+        const nome = item.querySelector('.servico-nome').value;
+        const preco = parseFloat(item.querySelector('.servico-preco').value);
+        return `${nome} - R$${preco.toFixed(2)}`;
+      }).filter(servico => servico && !servico.includes('undefined')); // Filtra serviços vazios
+      
+      // Validação básica
+      if (servicos.length === 0) {
+        alert('Adicione pelo menos um serviço válido');
+        return;
+      }
+      
+      // Verifica se o e-mail já está cadastrado (agora só bloqueia se for exatamente o mesmo)
+      const emailExistente = saloes.some(s => s.email.toLowerCase() === email.toLowerCase());
       if (emailExistente) {
         alert('Este e-mail já está cadastrado para outro salão.');
         return;
@@ -854,6 +924,8 @@
         horario: `${abertura} - ${fechamento}`,
         abertura,
         fechamento,
+        diasFuncionamento,
+        servicos,
         dataCriacao: new Date().toISOString()
       };
       
@@ -865,16 +937,23 @@
         // Gera o link único para o salão
         const linkSalão = gerarLinkSalão(novoSalao.id);
         
-        // Mostra o link para o administrador copiar
-        const mensagem = `Salão "${nome}" cadastrado com sucesso!\n\nLink de acesso para os clientes:\n${linkSalão}\n\nCopie este link e envie para o dono do salão.`;
-        alert(mensagem);
+        // Mostra mensagem de sucesso
+        alert(`Salão "${nome}" cadastrado com sucesso!\n\nLink de acesso: ${linkSalão}`);
         
-        // Limpa o formulário e recarrega a lista
+        // Limpa o formulário
         document.getElementById('cadastro-salao-form').reset();
+        document.getElementById('servicos-container').innerHTML = `
+          <div class="servico-item">
+            <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="Corte">
+            <input type="number" class="form-control servico-preco" placeholder="Preço" value="20.00" step="0.01">
+          </div>
+        `;
+        
+        // Recarrega a lista de salões
         await carregarSaloes();
       } catch (error) {
         console.error('Erro ao cadastrar salão:', error);
-        alert('Ocorreu um erro ao cadastrar o salão. Por favor, tente novamente.');
+        alert('Erro ao cadastrar salão. Por favor, tente novamente.');
       }
     });
     
@@ -994,12 +1073,38 @@
       const salao = saloes.find(s => s.id === id);
       if (!salao) return;
       
+      // Preenche o formulário com os dados do salão
       document.getElementById('nome-salao').value = salao.nome;
       document.getElementById('endereco-salao').value = salao.endereco;
       document.getElementById('email-salao-cadastro').value = salao.email;
       document.getElementById('senha-salao-cadastro').value = salao.senha;
       document.getElementById('abertura').value = salao.abertura;
       document.getElementById('fechamento').value = salao.fechamento;
+      
+      // Marca os dias de funcionamento
+      document.querySelectorAll('input[name="dias-funcionamento"]').forEach(checkbox => {
+        checkbox.checked = salao.diasFuncionamento.includes(checkbox.value);
+      });
+      
+      // Preenche os serviços
+      const servicosContainer = document.getElementById('servicos-container');
+      servicosContainer.innerHTML = '';
+      
+      salao.servicos.forEach(servico => {
+        const [nome, precoStr] = servico.split(' - R$');
+        const preco = parseFloat(precoStr);
+        
+        const servicoItem = document.createElement('div');
+        servicoItem.className = 'servico-item';
+        servicoItem.innerHTML = `
+          <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="${nome}">
+          <input type="number" class="form-control servico-preco" placeholder="Preço" value="${preco}" step="0.01">
+          <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        servicosContainer.appendChild(servicoItem);
+      });
       
       // Remove o salão da lista para evitar duplicação
       saloes = saloes.filter(s => s.id !== id);
@@ -1058,6 +1163,28 @@
       }
     }
     
+    // Função para atualizar os serviços disponíveis com base no salão
+    function atualizarServicos(salao) {
+      const selectServico = document.getElementById('servico');
+      selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
+      
+      // Se o salão tem serviços específicos, usa eles, senão usa os padrões
+      const servicosDisponiveis = salao?.servicos || [
+        'Corte Simples - R$25',
+        'Corte Degradê - R$30',
+        'Corte e Barba - R$40',
+        'Barba - R$20',
+        'Sobrancelha - R$15'
+      ];
+      
+      servicosDisponiveis.forEach(servico => {
+        const option = document.createElement('option');
+        option.value = servico;
+        option.textContent = servico;
+        selectServico.appendChild(option);
+      });
+    }
+    
     // Inicialização
     window.addEventListener('load', async () => {
       // Inicializa o IndexedDB
@@ -1105,8 +1232,6 @@
         const salaoSelecionado = saloes.find(s => s.id === salaoId);
         if (salaoSelecionado) {
           document.getElementById('salao-nome').textContent = salaoSelecionado.nome;
-          
-          // Atualiza os serviços disponíveis com base no salão
           atualizarServicos(salaoSelecionado);
         }
       }
@@ -1123,14 +1248,15 @@
             horario: '08:00 - 20:00',
             abertura: '08:00',
             fechamento: '20:00',
-            dataCriacao: new Date().toISOString(),
+            diasFuncionamento: ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'],
             servicos: [
               'Corte Simples - R$25',
               'Corte Degradê - R$30',
               'Corte e Barba - R$40',
               'Barba - R$20',
               'Sobrancelha - R$15'
-            ]
+            ],
+            dataCriacao: new Date().toISOString()
           },
           {
             id: '2',
@@ -1141,12 +1267,13 @@
             horario: '09:00 - 19:00',
             abertura: '09:00',
             fechamento: '19:00',
-            dataCriacao: new Date().toISOString(),
+            diasFuncionamento: ['segunda', 'terca', 'quarta', 'quinta', 'sexta'],
             servicos: [
               'Corte Simples - R$30',
               'Corte Degradê - R$35',
               'Barba - R$25'
-            ]
+            ],
+            dataCriacao: new Date().toISOString()
           }
         ];
         await salvarDados('saloes', saloes);
@@ -1180,28 +1307,6 @@
         await salvarDados('agendamentos', agendamentos);
       }
     });
-    
-    // Função para atualizar os serviços disponíveis com base no salão
-    function atualizarServicos(salao) {
-      const selectServico = document.getElementById('servico');
-      selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
-      
-      // Se o salão tem serviços específicos, usa eles, senão usa os padrões
-      const servicosDisponiveis = salao.servicos || [
-        'Corte Simples - R$25',
-        'Corte Degradê - R$30',
-        'Corte e Barba - R$40',
-        'Barba - R$20',
-        'Sobrancelha - R$15'
-      ];
-      
-      servicosDisponiveis.forEach(servico => {
-        const option = document.createElement('option');
-        option.value = servico;
-        option.textContent = servico;
-        selectServico.appendChild(option);
-      });
-    }
   </script>
 </body>
 </html>
