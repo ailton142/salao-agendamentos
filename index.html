@@ -969,13 +969,19 @@
     }
     
     // Função para obter o ID do salão da URL
+function gerarUrlPersonalizada(nome) {
+    return nome.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
+        .replace(/\s+/g, '-') // Espaços viravam hífens
+        .replace(/[^a-z0-9-]/g, ''); // Remove caracteres especiais
+}
     function getSalaoIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get('salao');
     }
     
     // Função para gerar link único para o salão
-    function gerarLinkSalao(salaoId) {
+   function gerarLinkSalao(salaoId) {
     const salao = saloes.find(s => s.id === salaoId);
     const urlBase = window.location.href.split('?')[0];
 
