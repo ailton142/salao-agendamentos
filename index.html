@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alicon Cortes - Sistema de Agendamento</title>
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
@@ -603,15 +604,22 @@
   <!-- Switch para JSON Server -->
   <div class="api-switch">
     <label>
-      <input type="checkbox" id="use-api"> Usar JSON Server (persistência entre navegadores)
+      <input type="checkbox" id="use-api" checked> Usar JSON Server (persistência entre navegadores)
     </label>
-    <div id="api-status" style="margin-top: 5px; font-size: 12px; color: #666;">Modo offline (IndexedDB)</div>
+    <div id="api-status" style="margin-top: 5px; font-size: 12px; color: #666;">Modo online (JSONBin.io)</div>
   </div>
 
   <script>
+    // ▼▼▼▼▼▼ CONFIGURAÇÃO JSONBIN.IO ▼▼▼▼▼▼ (TOP DO ARQUIVO)
+    const JSONBIN_CONFIG = {
+      BIN_ID: "684efe118960c979a5aa6291",
+      API_KEY: "$2a$10$b8sIOGWlNXkS/KH3i3MwwuEaVUYgKXKtnESKL.R4lCPokrRxLiy8G"
+    };
+    const API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_CONFIG.BIN_ID}`;
+    let useAPI = true;
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
     // Configurações
-    const API_URL = 'http://localhost:3000';
-    let useAPI = false;
     let db;
     
     // Variáveis globais
@@ -676,51 +684,47 @@
       });
     }
     
-    // Funções para API (JSON Server)
-    async function salvarDadosAPI(tabela, dados) {
-      try {
-        // Primeiro limpa todos os dados existentes
-        const response = await fetch(`${API_URL}/${tabela}`);
-        const existingData = await response.json();
-        
-        for (const item of existingData) {
-          await fetch(`${API_URL}/${tabela}/${item.id}`, {
-            method: 'DELETE'
-          });
-        }
-        
-        // Depois adiciona os novos dados
-        if (Array.isArray(dados)) {
-          for (const item of dados) {
-            await fetch(`${API_URL}/${tabela}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(item)
-            });
-          }
-        } else {
-          await fetch(`${API_URL}/${tabela}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dados)
-          });
-        }
-      } catch (error) {
-        console.error('Erro ao salvar dados na API:', error);
-        throw error;
-      }
-    }
-    
+    // ▼▼▼▼▼▼ FUNÇÕES DE API ATUALIZADAS ▼▼▼▼▼▼
     async function carregarDadosAPI(tabela) {
       try {
-        const response = await fetch(`${API_URL}/${tabela}`);
-        return await response.json();
+        const response = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const fullData = await response.json();
+        return fullData.record[tabela] || [];
       } catch (error) {
-        console.error('Erro ao carregar dados da API:', error);
+        console.error("API offline, usando fallback...", error);
+        useAPI = false;
         return [];
       }
     }
-    
+
+    async function salvarDadosAPI(tabela, dados) {
+      try {
+        const responseGet = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const dbCompleto = await responseGet.json();
+        
+        dbCompleto.record[tabela] = dados;
+        
+        const responsePut = await fetch(API_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': JSONBIN_CONFIG.API_KEY
+          },
+          body: JSON.stringify(dbCompleto.record)
+        });
+        
+        if (!responsePut.ok) throw new Error("Erro ao salvar");
+      } catch (error) {
+        console.error("JSONBin.io offline - Alternando para modo local", error);
+        useAPI = false;
+      }
+    }
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
     // Funções genéricas para salvar/carregar (automaticamente escolhem o método)
     async function salvarDados(tabela, dados) {
       if (useAPI) {
@@ -800,10 +804,33 @@
       }
     }
     
+    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: getSalaoIdFromUrl ▼▼▼▼▼▼
+    async function getSalaoIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const salaoParam = urlParams.get('salao');
+      if (!salaoParam) return null;
+
+      try {
+        const response = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const { record } = await response.json();
+        const salao = record.saloes.find(s => 
+          s.urlPersonalizada === salaoParam || s.id === salaoParam
+        );
+        return salao ? salao.id : null;
+      } catch (error) {
+        console.log("Usando dados locais (API offline)", error);
+        return saloes.find(s => 
+          s.urlPersonalizada === salaoParam || s.id === salaoParam
+        )?.id;
+      }
+    }
+
     // Função para carregar horários disponíveis
-    function carregarHorariosDisponiveis(data) {
+    async function carregarHorariosDisponiveis(data) {
       const dateObj = new Date(data);
-      const salaoId = getSalaoIdFromUrl();
+      const salaoId = await getSalaoIdFromUrl();
       const salao = saloes.find(s => s.id === salaoId);
       
       // Verifica se é domingo e se o salão funciona aos domingos
@@ -846,7 +873,7 @@
       const servico = document.getElementById("servico").value;
       const data = document.getElementById("data").value;
       const hora = document.getElementById("hora").value;
-      const salaoId = getSalaoIdFromUrl();
+      const salaoId = await getSalaoIdFromUrl();
       
       // Validações
       if (!nome || !telefone || !servico || !data || !hora) {
@@ -1026,41 +1053,12 @@
         .substring(0, 50); // Limita o tamanho para evitar URLs muito longas
     }
     
-    // Função para obter o ID do salão da URL
-    function getSalaoIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const salaoParam = urlParams.get('salao');
-      
-      if (!salaoParam) return null;
-      
-      // Tenta encontrar pelo URL personalizado primeiro
-      const salaoPorUrl = saloes.find(s => s.urlPersonalizada === salaoParam);
-      if (salaoPorUrl) return salaoPorUrl.id;
-      
-      // Se não encontrar, tenta pelo ID
-      const salaoPorId = saloes.find(s => s.id === salaoParam);
-      if (salaoPorId) return salaoPorId.id;
-      
-      return null;
-    }
-    
-    // Função para gerar link único para o salão
+    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: gerarLinkSalão ▼▼▼▼▼▼
     function gerarLinkSalão(salaoId) {
       const salao = saloes.find(s => s.id === salaoId);
-      if (!salao) return '';
-      
-      // Obtém a URL base sem parâmetros
-      let urlBase = window.location.href.split('?')[0];
-      
-      // Se estiver em localhost, substitui por um domínio fictício para demonstração
-      if (urlBase.includes('localhost') || urlBase.includes('127.0.0.1')) {
-        urlBase = 'https://aliconcortes.com.br/agendamento';
-      }
-      
-      // Usa a URL personalizada se existir, caso contrário usa o ID
-      const identificador = salao.urlPersonalizada || salaoId;
-      
-      return `${urlBase}?salao=${identificador}`;
+      if (!salao) return '#';
+      const baseUrl = window.location.origin + window.location.pathname;
+      return `${baseUrl}?salao=${salao.urlPersonalizada || salaoId}`;
     }
     
     // Função para copiar texto para a área de transferência
@@ -1409,7 +1407,7 @@
     document.getElementById('use-api').addEventListener('change', async function() {
       useAPI = this.checked;
       document.getElementById('api-status').textContent = useAPI 
-        ? 'Modo online (JSON Server)' 
+        ? 'Modo online (JSONBin.io)' 
         : 'Modo offline (IndexedDB)';
       
       // Recarrega os dados quando mudar o modo
@@ -1422,34 +1420,36 @@
       }
     });
     
-    // Verifica se o JSON Server está disponível
-    async function verificarAPIDisponivel() {
-      try {
-        const response = await fetch(API_URL);
-        return response.ok;
-      } catch {
-        return false;
-      }
-    }
-    
-    // Inicialização
+    // ▼▼▼▼▼▼ EVENTO LOAD ATUALIZADO ▼▼▼▼▼▼
     window.addEventListener('load', async () => {
-      // Inicializa o IndexedDB
-      await initDB();
-      
-      // Verifica se o JSON Server está disponível
-      const apiDisponivel = await verificarAPIDisponivel();
-      if (apiDisponivel) {
-        document.getElementById('use-api').disabled = false;
-        document.querySelector('.api-switch label').title = '';
-      } else {
-        document.getElementById('use-api').disabled = true;
-        document.querySelector('.api-switch label').title = 'JSON Server não detectado. Execute "json-server --watch db.json" no terminal.';
+      // 1. Carrega dados DA API primeiro
+      try {
+        const [apiSaloes, apiAgendamentos] = await Promise.all([
+          carregarDadosAPI('saloes'),
+          carregarDadosAPI('agendamentos')
+        ]);
+        saloes = apiSaloes;
+        agendamentos = apiAgendamentos;
+      } catch {
+        saloes = await carregarDadosIndexedDB('saloes');
+        agendamentos = await carregarDadosIndexedDB('agendamentos');
       }
-      
-      // Carrega os dados
-      saloes = await carregarDados('saloes');
-      agendamentos = await carregarDados('agendamentos');
+
+      // 2. Processa parâmetro da URL
+      const salaoId = await getSalaoIdFromUrl();
+      if (salaoId) {
+        const salao = saloes.find(s => s.id === salaoId);
+        if (salao) {
+          document.getElementById('salao-nome').textContent = salao.nome;
+          carregarServicosSalao(salaoId);
+          if (!window.location.href.includes(salao.urlPersonalizada)) {
+            history.replaceState({}, '', `?salao=${salao.urlPersonalizada || salaoId}`);
+          }
+        }
+      }
+
+      // Inicializa o IndexedDB como fallback
+      await initDB();
       
       // Configura a data mínima como hoje
       const hoje = new Date();
@@ -1470,27 +1470,6 @@
           carregarHorariosDisponiveis(selectedDate);
         }
       });
-      
-      // Verifica se há um parâmetro de salão na URL
-      const salaoId = getSalaoIdFromUrl();
-      
-      if (salaoId) {
-        // Personaliza a página com base no salão selecionado
-        const salaoSelecionado = saloes.find(s => s.id === salaoId);
-        if (salaoSelecionado) {
-          document.getElementById('salao-nome').textContent = salaoSelecionado.nome;
-          carregarServicosSalao(salaoId);
-          
-          // Atualiza a URL no navegador para incluir o nome personalizado se não estiver presente
-          if (!window.location.href.includes(salaoSelecionado.urlPersonalizada)) {
-            const novaUrl = gerarLinkSalão(salaoId);
-            window.history.replaceState({}, document.title, novaUrl);
-          }
-        } else {
-          // Se o salão não for encontrado, redireciona para a página principal
-          window.location.href = window.location.href.split('?')[0];
-        }
-      }
       
       // Dados de exemplo (apenas para primeira execução)
       if (saloes.length === 0) {
