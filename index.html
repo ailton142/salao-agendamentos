@@ -45,7 +45,7 @@
   text-align: center;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Detalhe sofisticado */
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header h1 {
@@ -326,7 +326,73 @@
       justify-content: space-between;
       margin-top: 20px;
     }
-    
+
+    /* ===== ESTILOS PARA RELATÓRIO ===== */
+    .tabela-relatorio {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .tabela-relatorio th {
+      background-color: var(--primary);
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .tabela-relatorio td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .resumo-faturamento {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .resumo-item {
+      margin: 5px 0;
+    }
+
+    .btn-relatorio {
+      margin: 10px 0;
+    }
+
+    /* ===== ESTILOS PARA EXPORTAÇÃO ===== */
+    .botoes-exportacao {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .btn-exportar {
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-exportar-pdf {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+    }
+
+    .btn-exportar-csv {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+    }
+
     @media (max-width: 768px) {
       .col-md-6 {
         flex: 0 0 100%;
@@ -359,6 +425,15 @@
       .modal-content {
         width: 95%;
         padding: 15px;
+      }
+
+      /* Responsivo para o resumo */
+      .resumo-faturamento {
+        flex-direction: column;
+      }
+      
+      .botoes-exportacao {
+        flex-direction: column;
       }
     }
   </style>
@@ -477,6 +552,38 @@
               <!-- Os agendamentos serão carregados aqui -->
             </tbody>
           </table>
+        </div>
+
+        <!-- Área de Relatórios -->
+        <div class="card" id="relatorio-container">
+          <h2>Relatório e Faturamento</h2>
+          
+          <div class="form-group">
+            <label>Período:</label>
+            <div class="row">
+              <div class="col-md-6">
+                <input type="date" id="data-inicio" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <input type="date" id="data-fim" class="form-control">
+              </div>
+            </div>
+          </div>
+          
+          <button onclick="gerarRelatorio()" class="btn btn-primary btn-relatorio">
+            <i class="fas fa-chart-bar"></i> Gerar Relatório
+          </button>
+
+          <div class="botoes-exportacao" style="display: none;" id="botoes-exportacao">
+            <button onclick="exportarParaPDF()" class="btn-exportar btn-exportar-pdf">
+              <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button onclick="exportarParaCSV()" class="btn-exportar btn-exportar-csv">
+              <i class="fas fa-file-excel"></i> Exportar CSV
+            </button>
+          </div>
+          
+          <div id="resultado-relatorio"></div>
         </div>
       </div>
     </div>
@@ -620,7 +727,7 @@
   </div>
 
   <script>
-    // ▼▼▼▼▼▼ CONFIGURAÇÃO JSONBIN.IO ▼▼▼▼▼▼ (TOP DO ARQUIVO)
+    // ▼▼▼▼▼▼ CONFIGURAÇÃO JSONBIN.IO ▼▼▼▼▼▼
     const JSONBIN_CONFIG = {
       BIN_ID: "684efe118960c979a5aa6291",
       API_KEY: "$2a$10$b8sIOGWlNXkS/KH3i3MwwuEaVUYgKXKtnESKL.R4lCPokrRxLiy8G"
@@ -640,7 +747,7 @@
     // Inicializa o IndexedDB
     function initDB() {
       return new Promise((resolve) => {
-        const request = indexedDB.open('SalaoAgendamentosDB', 3); // Versão 3 para melhorias
+        const request = indexedDB.open('SalaoAgendamentosDB', 3);
         
         request.onupgradeneeded = (event) => {
           const db = event.target.result;
@@ -665,11 +772,9 @@
         const transaction = db.transaction(tabela, 'readwrite');
         const store = transaction.objectStore(tabela);
         
-        // Limpa os dados existentes
         const clearRequest = store.clear();
         
         clearRequest.onsuccess = () => {
-          // Adiciona os novos dados
           if (Array.isArray(dados)) {
             dados.forEach(item => {
               store.put(item);
@@ -735,7 +840,7 @@
     }
     // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-    // Funções genéricas para salvar/carregar (automaticamente escolhem o método)
+    // Funções genéricas para salvar/carregar
     async function salvarDados(tabela, dados) {
       if (useAPI) {
         return await salvarDadosAPI(tabela, dados);
@@ -754,20 +859,15 @@
     
     // Função para alternar entre as abas
     function openTab(tabId) {
-      // Esconde todos os conteúdos das abas
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
       
-      // Remove a classe active de todas as tabs
       document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
       });
       
-      // Mostra a tab selecionada
       document.getElementById(tabId).classList.add('active');
-      
-      // Adiciona a classe active na tab clicada
       event.currentTarget.classList.add('active');
     }
     
@@ -782,14 +882,12 @@
       const selectHora = document.getElementById('hora');
       selectHora.innerHTML = '<option value="">Selecione o horário</option>';
       
-      // Converte horários de abertura e fechamento para minutos
       const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
       const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
       
       const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
       const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
       
-      // Gera os horários disponíveis
       for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
         const hora = Math.floor(minutos / 60);
         const minuto = minutos % 60;
@@ -799,7 +897,6 @@
         option.value = horaFormatada;
         option.textContent = horaFormatada;
         
-        // Verifica se o horário está ocupado
         const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
         
         if (horarioOcupado) {
@@ -843,26 +940,20 @@
       const salaoId = await getSalaoIdFromUrl();
       const salao = saloes.find(s => s.id === salaoId);
       
-      // Verifica se é domingo e se o salão funciona aos domingos
       if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
         document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
         return;
       }
       
-      // Verifica se é feriado e se o salão funciona em feriados
       if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
         document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
         return;
       }
       
-      // Busca os agendamentos do dia
       const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
-      
-      // Obtém o horário de funcionamento do salão
       const abertura = salao ? salao.abertura : '08:00';
       const fechamento = salao ? salao.fechamento : '20:00';
       
-      // Gera os horários disponíveis
       gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
     }
     
@@ -885,7 +976,6 @@
       const hora = document.getElementById("hora").value;
       const salaoId = await getSalaoIdFromUrl();
       
-      // Validações
       if (!nome || !telefone || !servico || !data || !hora) {
         alert('Preencha todos os campos obrigatórios');
         return;
@@ -896,7 +986,6 @@
         return;
       }
       
-      // Cria o objeto de agendamento
       const novoAgendamento = {
         id: Date.now().toString(),
         nome,
@@ -909,17 +998,275 @@
         salaoId: salaoId || 'default'
       };
       
-      // Adiciona ao array de agendamentos
       agendamentos.push(novoAgendamento);
       await salvarDados('agendamentos', agendamentos);
       
       alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarData(data)}\nHorário: ${hora}`);
       
-      // Limpa o formulário
       document.getElementById("agendamento-form").reset();
       document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
     });
     
+    // ===== FUNÇÕES DE RELATÓRIO ===== //
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function extrairValorServico(servico) {
+      const match = servico.match(/R\$\s*([\d,.]+)/);
+      if (match) {
+        return parseFloat(match[1].replace('.', '').replace(',', '.'));
+      }
+      return 0;
+    }
+
+    function formatarDataSimples(dataString) {
+      const data = new Date(dataString);
+      return data.toLocaleDateString('pt-BR');
+    }
+
+    async function gerarRelatorio() {
+  const dataInicio = document.getElementById('data-inicio').value;
+  const dataFim = document.getElementById('data-fim').value;
+  const salaoId = currentUser.salaoId;
+
+  if (!dataInicio || !dataFim) {
+    alert("Selecione o período para gerar o relatório");
+    return;
+  }
+
+  // Filtra agendamentos
+  const agendamentosFiltrados = agendamentos.filter(ag => {
+    return (
+      ag.salaoId === salaoId &&
+      ag.status === 'confirmado' &&
+      ag.data >= dataInicio && 
+      ag.data <= dataFim
+    );
+  });
+
+  // Calcula faturamento
+  let faturamentoTotal = 0;
+  const servicosMap = new Map(); // Armazena: {nomeServico: {valorUnitario, quantidade, valorTotal}}
+
+  agendamentosFiltrados.forEach(ag => {
+    const valorUnitario = extrairValorServico(ag.servico);
+    const nomeServico = ag.servico.split('-')[0].trim();
+    
+    if (servicosMap.has(nomeServico)) {
+      const servico = servicosMap.get(nomeServico);
+      servico.quantidade += 1;
+      servico.valorTotal += valorUnitario;
+    } else {
+      servicosMap.set(nomeServico, {
+        valorUnitario: valorUnitario,
+        quantidade: 1,
+        valorTotal: valorUnitario
+      });
+    }
+    
+    faturamentoTotal += valorUnitario;
+  });
+
+  // Gera HTML do relatório
+  let html = `
+    <div class="resumo-faturamento">
+      <div class="resumo-item">
+        <strong>Período:</strong> ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}
+      </div>
+      <div class="resumo-item">
+        <strong>Total de Agendamentos:</strong> ${agendamentosFiltrados.length}
+      </div>
+      <div class="resumo-item">
+        <strong>Faturamento Total:</strong> ${formatarMoeda(faturamentoTotal)}
+      </div>
+    </div>
+
+    <h3>Detalhamento por Serviço</h3>
+    <table class="tabela-relatorio">
+      <thead>
+        <tr>
+          <th>Serviço</th>
+          <th>Valor Unitário</th>
+          <th>Quantidade</th>
+          <th>Valor Total</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  // Adiciona linhas para cada serviço
+  servicosMap.forEach((dados, nome) => {
+    html += `
+      <tr>
+        <td>${nome}</td>
+        <td>${formatarMoeda(dados.valorUnitario)}</td>
+        <td>${dados.quantidade}</td>
+        <td>${formatarMoeda(dados.valorTotal)}</td>
+      </tr>
+    `;
+  });
+
+  // Linha de TOTAL
+  html += `
+      <tr style="font-weight: bold; background-color: #f5f5f5;">
+        <td>TOTAL GERAL</td>
+        <td>-</td>
+        <td>${agendamentosFiltrados.length}</td>
+        <td>${formatarMoeda(faturamentoTotal)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${agendamentosFiltrados.length})</h3>
+  <table class="tabela-relatorio">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Cliente</th>
+        <th>Telefone</th>
+        <th>Serviço</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  // Adiciona os agendamentos
+  agendamentosFiltrados
+    .sort((a, b) => new Date(b.data) - new Date(a.data))
+    .slice(0, 10)
+    .forEach(ag => {
+      html += `
+        <tr>
+          <td>${formatarDataSimples(ag.data)}</td>
+          <td>${ag.nome}</td>
+          <td>${ag.telefone}</td>
+          <td>${ag.servico.split('-')[0].trim()}</td>
+          <td>${ag.servico.match(/R\$\s*[\d,]+/)?.[0] || 'N/A'}</td>
+        </tr>
+      `;
+    });
+
+  html += `</tbody></table>`;
+
+  document.getElementById('resultado-relatorio').innerHTML = html;
+  document.getElementById('botoes-exportacao').style.display = 'flex';
+}
+    // ===== FUNÇÕES DE EXPORTAÇÃO ===== //
+    async function exportarParaPDF() {
+      if (typeof jsPDF === 'undefined') {
+        await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+        await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js');
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Cabeçalho
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salao = saloes.find(s => s.id === currentUser.salaoId);
+      
+      doc.setFontSize(18);
+      doc.text(`Relatório - ${salao.nome}`, 14, 15);
+      doc.setFontSize(12);
+      doc.text(`Período: ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}`, 14, 22);
+
+      // Resumo
+      doc.autoTable({
+        startY: 30,
+        head: [['Resumo do Período', '']],
+        body: [
+          ['Total de Agendamentos', document.querySelector('.resumo-item:nth-child(2)').textContent.replace('Total de Agendamentos:', '').trim()],
+          ['Faturamento Total', document.querySelector('.resumo-item:nth-child(3)').textContent.replace('Faturamento Total:', '').trim()]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [108, 99, 255] }
+      });
+
+      // Serviços
+      const servicosData = [];
+      document.querySelectorAll('.tabela-relatorio:first-of-type tbody tr').forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length === 3) {
+          servicosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent]);
+        }
+      });
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 10,
+        head: [['Serviço', 'Quantidade', 'Faturamento']],
+        body: servicosData,
+        theme: 'grid',
+        headStyles: { fillColor: [108, 99, 255] }
+      });
+
+      // Agendamentos
+      const agendamentosData = [];
+      document.querySelectorAll('.tabela-relatorio:last-of-type tbody tr').forEach(row => {
+        const cols = row.querySelectorAll('td');
+        agendamentosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent, cols[3].textContent, cols[4].textContent]);
+      });
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 10,
+        head: [['Data', 'Cliente', 'Telefone', 'Serviço', 'Valor']],
+        body: agendamentosData,
+        theme: 'grid',
+        headStyles: { fillColor: [108, 99, 255] },
+        pageBreak: 'auto',
+        margin: { top: 10 }
+      });
+
+      // Rodapé
+      doc.setFontSize(10);
+      doc.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`, 14, doc.internal.pageSize.height - 10);
+
+      doc.save(`relatorio_${salao.nome}_${dataInicio}_a_${dataFim}.pdf`);
+    }
+
+    function exportarParaCSV() {
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salaoId = currentUser.salaoId;
+      
+      const agendamentosFiltrados = agendamentos.filter(ag => {
+        return (
+          ag.salaoId === salaoId &&
+          ag.status === 'confirmado' &&
+          ag.data >= dataInicio && 
+          ag.data <= dataFim
+        );
+      });
+
+      let csv = 'Nome,Telefone,Serviço,Data,Hora,Valor\n';
+      
+      agendamentosFiltrados.forEach(ag => {
+        const valor = ag.servico.match(/R\$\s*[\d,]+/)?.[0] || '0';
+        csv += `"${ag.nome}","${ag.telefone}","${ag.servico.split('-')[0].trim()}","${formatarDataSimples(ag.data)}","${ag.hora}","${valor}"\n`;
+      });
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `clientes_${formatarDataSimples(dataInicio)}_a_${formatarDataSimples(dataFim)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function carregarScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
     // Login do Salão
     document.getElementById('login-salao-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -927,13 +1274,22 @@
       const email = document.getElementById('email-salao').value;
       const senha = document.getElementById('senha-salao').value;
       
-      // Verifica se é um salão cadastrado
       const salao = saloes.find(s => s.email === email && s.senha === senha);
       
       if (salao) {
         currentUser = { email, role: 'salao', salaoId: salao.id };
         document.getElementById('login-salao-form').style.display = 'none';
         document.getElementById('salao-dashboard').style.display = 'block';
+        document.getElementById('relatorio-container').style.display = 'block';
+        
+        // Configura datas padrão (últimos 30 dias)
+        const hoje = new Date();
+        const trintaDiasAtras = new Date();
+        trintaDiasAtras.setDate(hoje.getDate() - 30);
+        
+        document.getElementById('data-inicio').value = trintaDiasAtras.toISOString().split('T')[0];
+        document.getElementById('data-fim').value = hoje.toISOString().split('T')[0];
+        
         await carregarAgendamentosSalao(salao.id);
       } else {
         alert('E-mail ou senha incorretos');
@@ -947,7 +1303,6 @@
       const email = document.getElementById('email-master').value;
       const senha = document.getElementById('senha-master').value;
       
-      // Simulação de login master (senha fixa)
       if (email === 'admin@example.com' && senha === 'admin123') {
         currentUser = { email, role: 'master' };
         document.getElementById('login-master-form').style.display = 'none';
@@ -1057,13 +1412,13 @@
     // Função para gerar URL personalizada
     function gerarUrlPersonalizada(nome) {
       return nome.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
-        .replace(/\s+/g, '-') // Substitui espaços por hífens
-        .replace(/[^a-z0-9-]/g, '') // Remove caracteres especiais
-        .substring(0, 50); // Limita o tamanho para evitar URLs muito longas
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .substring(0, 50);
     }
     
-    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: gerarLinkSalão ▼▼▼▼▼▼
+    // Função para gerar link do salão
     function gerarLinkSalão(salaoId) {
       const salao = saloes.find(s => s.id === salaoId);
       if (!salao) return '#';
@@ -1203,7 +1558,7 @@
       }
     }
     
-    // Função para editar salão (COMPLETA)
+    // Função para editar salão
     async function editarSalao(id) {
       const salao = saloes.find(s => s.id === id);
       if (!salao) return;
@@ -1430,7 +1785,7 @@
       }
     });
     
-    // ▼▼▼▼▼▼ EVENTO LOAD ATUALIZADO ▼▼▼▼▼▼
+    // Inicialização do sistema
     window.addEventListener('load', async () => {
       // 1. Carrega dados DA API primeiro
       try {
