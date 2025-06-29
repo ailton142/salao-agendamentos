@@ -15,7 +15,10 @@
       --danger: #DC3545;
       --warning: #FFC107;
       --light: #F8F9FA;
-      --dark: #343A40;
+      --dark: #1A1A1A;
+      --darker: #121212;
+      --text: #E0E0E0;
+      --text-secondary: #B0B0B0;
     }
     
     * {
@@ -26,8 +29,8 @@
     }
     
     body {
-      background-color: #f5f7fa;
-      color: #333;
+      background-color: var(--darker);
+      color: var(--text);
     }
     
     .container {
@@ -38,34 +41,46 @@
     
     /* Header */
     .header {
-       background: 
-    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url('https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-  padding: 40px 20px;
-  text-align: center;
-  color: white;
-  border-radius: 0;
-}
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.8), 
+        linear-gradient(to right, #2C2C2C, #1A1A1A));
+      padding: 40px 20px;
+      text-align: center;
+      color: white;
+      border-radius: 0;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
 
-.header h1 {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
+    .header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: white;
+    }
 
-.header p {
-  font-size: 1rem;
-  opacity: 0.9;
-}
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      color: var(--text-secondary);
+    }
     
     /* Card */
     .card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: var(--dark);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       padding: 25px;
       margin-bottom: 30px;
+      border: 1px solid #333;
+    }
+    
+    .card h2 {
+      color: white;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
     }
     
     /* Formulário */
@@ -77,29 +92,40 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      color: var(--dark);
+      color: var(--text);
     }
     
     .form-control {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      border: 1px solid #444;
+      border-radius: 6px;
       font-size: 16px;
       transition: all 0.3s;
+      background-color: #2C2C2C;
+      color: var(--text);
     }
     
     .form-control:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
       outline: none;
+      background-color: #333;
+    }
+    
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23B0B0B0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
     }
     
     /* Botões */
     .btn {
       display: inline-block;
       padding: 12px 24px;
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: 600;
       text-align: center;
       cursor: pointer;
@@ -115,11 +141,16 @@
     .btn-primary:hover {
       background-color: var(--secondary);
       transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     
     .btn-secondary {
-      background-color: var(--secondary);
+      background-color: #444;
       color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #555;
     }
     
     .btn-danger {
@@ -139,13 +170,13 @@
     
     /* Estilos para horários */
     .horario-ocupado {
-      color: #dc3545;
+      color: #ff6b6b;
       text-decoration: line-through;
-      background-color: #f8d7da;
+      background-color: rgba(220, 53, 69, 0.1);
     }
     
     .horario-disponivel {
-      color: #28a745;
+      color: #51cf66;
     }
     
     /* Layout responsivo */
@@ -165,18 +196,26 @@
     .tabs {
       display: flex;
       margin-bottom: 20px;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #444;
     }
     
     .tab {
-      padding: 10px 20px;
+      padding: 12px 20px;
       cursor: pointer;
       border-bottom: 3px solid transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .tab:hover {
+      color: var(--text);
     }
     
     .tab.active {
       border-bottom-color: var(--primary);
-      font-weight: bold;
+      color: var(--text);
+      background-color: rgba(108, 99, 255, 0.1);
     }
     
     .tab-content {
@@ -197,16 +236,17 @@
     th, td {
       padding: 12px 15px;
       text-align: left;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #444;
     }
     
     th {
-      background-color: #f8f9fa;
+      background-color: #2C2C2C;
       font-weight: 600;
+      color: white;
     }
     
     tr:hover {
-      background-color: #f5f5f5;
+      background-color: rgba(255, 255, 255, 0.05);
     }
     
     .badge {
@@ -218,18 +258,18 @@
     }
     
     .badge-success {
-      background-color: #d4edda;
-      color: #155724;
+      background-color: rgba(40, 167, 69, 0.2);
+      color: #51cf66;
     }
     
     .badge-danger {
-      background-color: #f8d7da;
-      color: #721c24;
+      background-color: rgba(220, 53, 69, 0.2);
+      color: #ff6b6b;
     }
     
     .badge-warning {
-      background-color: #fff3cd;
-      color: #856404;
+      background-color: rgba(255, 193, 7, 0.2);
+      color: #fcc419;
     }
     
     /* Link do salão */
@@ -237,9 +277,12 @@
       display: block;
       margin-top: 10px;
       padding: 10px;
-      background-color: #f0f0f0;
+      background-color: #2C2C2C;
       border-radius: 5px;
       word-break: break-all;
+      color: var(--text-secondary);
+      font-size: 14px;
+      border: 1px solid #444;
     }
     
     .copy-link {
@@ -250,6 +293,7 @@
       color: white;
       border-radius: 3px;
       cursor: pointer;
+      float: right;
     }
     
     .copy-link:hover {
@@ -261,11 +305,23 @@
       position: fixed;
       bottom: 10px;
       right: 10px;
-      background: white;
+      background: var(--dark);
       padding: 10px;
       border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       z-index: 1000;
+      border: 1px solid #444;
+    }
+    
+    .api-switch label {
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    #api-status {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--text-secondary);
     }
     
     /* Serviços do salão */
@@ -276,17 +332,59 @@
     .servico-item {
       display: flex;
       margin-bottom: 10px;
+      gap: 10px;
     }
     
     .servico-item input {
       flex: 1;
-      margin-right: 10px;
     }
     
     .servico-item .btn {
       width: auto;
       padding: 10px;
     }
+
+    /* Redes Sociais */
+    .rede-social-item {
+      display: flex;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .rede-social-item select {
+      flex: 1;
+      max-width: 150px;
+    }
+
+    .rede-social-item input {
+      flex: 2;
+    }
+
+    .icones-redes-sociais {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .icone-rede-social {
+      font-size: 24px;
+      color: var(--primary);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .icone-rede-social:hover {
+      transform: translateY(-3px);
+      color: var(--secondary);
+    }
+
+    .icone-whatsapp { color: #25D366; }
+    .icone-facebook { color: #1877F2; }
+    .icone-instagram { color: #E4405F; }
+    .icone-twitter { color: #1DA1F2; }
+    .icone-youtube { color: #FF0000; }
+    .icone-linkedin { color: #0A66C2; }
     
     /* Modal de edição */
     .modal {
@@ -295,7 +393,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.7);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -303,13 +401,15 @@
     }
     
     .modal-content {
-      background: white;
+      background: var(--dark);
       padding: 20px;
       border-radius: 10px;
       width: 90%;
       max-width: 800px;
       max-height: 90vh;
       overflow-y: auto;
+      border: 1px solid #444;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
     
     .modal-header {
@@ -317,12 +417,21 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #444;
+    }
+    
+    .modal-header h2 {
+      color: white;
     }
     
     .modal-footer {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
+      gap: 10px;
       margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #444;
     }
 
     /* ===== ESTILOS PARA RELATÓRIO ===== */
@@ -341,21 +450,27 @@
 
     .tabela-relatorio td {
       padding: 10px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #444;
     }
 
     .resumo-faturamento {
-      background-color: #f8f9fa;
+      background-color: #2C2C2C;
       padding: 15px;
       border-radius: 8px;
       margin: 20px 0;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
+      border: 1px solid #444;
     }
 
     .resumo-item {
       margin: 5px 0;
+      color: var(--text);
+    }
+
+    .resumo-item strong {
+      color: var(--text);
     }
 
     .btn-relatorio {
@@ -377,6 +492,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      transition: all 0.3s;
     }
 
     .btn-exportar-pdf {
@@ -385,10 +501,18 @@
       border: none;
     }
 
+    .btn-exportar-pdf:hover {
+      background-color: #c0392b;
+    }
+
     .btn-exportar-csv {
       background-color: #27ae60;
       color: white;
       border: none;
+    }
+
+    .btn-exportar-csv:hover {
+      background-color: #219653;
     }
 
     @media (max-width: 768px) {
@@ -399,6 +523,8 @@
       
       .tabs {
         flex-direction: column;
+        border-bottom: none;
+        border-left: 1px solid #444;
       }
       
       .tab {
@@ -419,6 +545,14 @@
         margin-right: 0;
         margin-bottom: 5px;
       }
+
+      .rede-social-item {
+        flex-direction: column;
+      }
+
+      .rede-social-item select {
+        max-width: 100%;
+      }
       
       .modal-content {
         width: 95%;
@@ -433,6 +567,16 @@
       .botoes-exportacao {
         flex-direction: column;
       }
+    }
+
+    /* Adicionando um pouco de animação */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .tab-content {
+      animation: fadeIn 0.3s ease-out forwards;
     }
   </style>
 </head>
@@ -498,6 +642,12 @@
             <i class="fas fa-calendar-check"></i> CONFIRMAR AGENDAMENTO
           </button>
         </form>
+      </div>
+
+      <!-- Container para as redes sociais -->
+      <div class="card" id="redes-sociais-container">
+        <h3>Nossas Redes Sociais</h3>
+        <!-- As redes sociais serão carregadas aqui dinamicamente -->
       </div>
     </div>
     
@@ -686,6 +836,16 @@
               </div>
               <button type="button" class="btn btn-secondary" onclick="adicionarServico()">
                 <i class="fas fa-plus"></i> Adicionar Serviço
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label>Redes Sociais</label>
+              <div id="redes-sociais-salao">
+                <!-- Redes sociais serão adicionadas aqui -->
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="adicionarRedeSocial()">
+                <i class="fas fa-plus"></i> Adicionar Rede Social
               </button>
             </div>
             
@@ -1024,133 +1184,134 @@
     }
 
     async function gerarRelatorio() {
-  const dataInicio = document.getElementById('data-inicio').value;
-  const dataFim = document.getElementById('data-fim').value;
-  const salaoId = currentUser.salaoId;
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salaoId = currentUser.salaoId;
 
-  if (!dataInicio || !dataFim) {
-    alert("Selecione o período para gerar o relatório");
-    return;
-  }
+      if (!dataInicio || !dataFim) {
+        alert("Selecione o período para gerar o relatório");
+        return;
+      }
 
-  // Filtra agendamentos
-  const agendamentosFiltrados = agendamentos.filter(ag => {
-    return (
-      ag.salaoId === salaoId &&
-      ag.status === 'confirmado' &&
-      ag.data >= dataInicio && 
-      ag.data <= dataFim
-    );
-  });
-
-  // Calcula faturamento
-  let faturamentoTotal = 0;
-  const servicosMap = new Map(); // Armazena: {nomeServico: {valorUnitario, quantidade, valorTotal}}
-
-  agendamentosFiltrados.forEach(ag => {
-    const valorUnitario = extrairValorServico(ag.servico);
-    const nomeServico = ag.servico.split('-')[0].trim();
-    
-    if (servicosMap.has(nomeServico)) {
-      const servico = servicosMap.get(nomeServico);
-      servico.quantidade += 1;
-      servico.valorTotal += valorUnitario;
-    } else {
-      servicosMap.set(nomeServico, {
-        valorUnitario: valorUnitario,
-        quantidade: 1,
-        valorTotal: valorUnitario
+      // Filtra agendamentos
+      const agendamentosFiltrados = agendamentos.filter(ag => {
+        return (
+          ag.salaoId === salaoId &&
+          ag.status === 'confirmado' &&
+          ag.data >= dataInicio && 
+          ag.data <= dataFim
+        );
       });
-    }
-    
-    faturamentoTotal += valorUnitario;
-  });
 
-  // Gera HTML do relatório
-  let html = `
-    <div class="resumo-faturamento">
-      <div class="resumo-item">
-        <strong>Período:</strong> ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}
-      </div>
-      <div class="resumo-item">
-        <strong>Total de Agendamentos:</strong> ${agendamentosFiltrados.length}
-      </div>
-      <div class="resumo-item">
-        <strong>Faturamento Total:</strong> ${formatarMoeda(faturamentoTotal)}
-      </div>
-    </div>
+      // Calcula faturamento
+      let faturamentoTotal = 0;
+      const servicosMap = new Map(); // Armazena: {nomeServico: {valorUnitario, quantidade, valorTotal}}
 
-    <h3>Detalhamento por Serviço</h3>
-    <table class="tabela-relatorio">
-      <thead>
-        <tr>
-          <th>Serviço</th>
-          <th>Valor Unitário</th>
-          <th>Quantidade</th>
-          <th>Valor Total</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+      agendamentosFiltrados.forEach(ag => {
+        const valorUnitario = extrairValorServico(ag.servico);
+        const nomeServico = ag.servico.split('-')[0].trim();
+        
+        if (servicosMap.has(nomeServico)) {
+          const servico = servicosMap.get(nomeServico);
+          servico.quantidade += 1;
+          servico.valorTotal += valorUnitario;
+        } else {
+          servicosMap.set(nomeServico, {
+            valorUnitario: valorUnitario,
+            quantidade: 1,
+            valorTotal: valorUnitario
+          });
+        }
+        
+        faturamentoTotal += valorUnitario;
+      });
 
-  // Adiciona linhas para cada serviço
-  servicosMap.forEach((dados, nome) => {
-    html += `
-      <tr>
-        <td>${nome}</td>
-        <td>${formatarMoeda(dados.valorUnitario)}</td>
-        <td>${dados.quantidade}</td>
-        <td>${formatarMoeda(dados.valorTotal)}</td>
-      </tr>
-    `;
-  });
+      // Gera HTML do relatório
+      let html = `
+        <div class="resumo-faturamento">
+          <div class="resumo-item">
+            <strong>Período:</strong> ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}
+          </div>
+          <div class="resumo-item">
+            <strong>Total de Agendamentos:</strong> ${agendamentosFiltrados.length}
+          </div>
+          <div class="resumo-item">
+            <strong>Faturamento Total:</strong> ${formatarMoeda(faturamentoTotal)}
+          </div>
+        </div>
 
-  // Linha de TOTAL
-  html += `
-      <tr style="font-weight: bold; background-color: #f5f5f5;">
-        <td>TOTAL GERAL</td>
-        <td>-</td>
-        <td>${agendamentosFiltrados.length}</td>
-        <td>${formatarMoeda(faturamentoTotal)}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${agendamentosFiltrados.length})</h3>
-  <table class="tabela-relatorio">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Cliente</th>
-        <th>Telefone</th>
-        <th>Serviço</th>
-        <th>Valor</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  // Adiciona os agendamentos
-  agendamentosFiltrados
-    .sort((a, b) => new Date(b.data) - new Date(a.data))
-    .slice(0, 10)
-    .forEach(ag => {
-      html += `
-        <tr>
-          <td>${formatarDataSimples(ag.data)}</td>
-          <td>${ag.nome}</td>
-          <td>${ag.telefone}</td>
-          <td>${ag.servico.split('-')[0].trim()}</td>
-          <td>${ag.servico.match(/R\$\s*[\d,]+/)?.[0] || 'N/A'}</td>
-        </tr>
+        <h3>Detalhamento por Serviço</h3>
+        <table class="tabela-relatorio">
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Valor Unitário</th>
+              <th>Quantidade</th>
+              <th>Valor Total</th>
+            </tr>
+          </thead>
+          <tbody>
       `;
-    });
 
-  html += `</tbody></table>`;
+      // Adiciona linhas para cada serviço
+      servicosMap.forEach((dados, nome) => {
+        html += `
+          <tr>
+            <td>${nome}</td>
+            <td>${formatarMoeda(dados.valorUnitario)}</td>
+            <td>${dados.quantidade}</td>
+            <td>${formatarMoeda(dados.valorTotal)}</td>
+          </tr>
+        `;
+      });
 
-  document.getElementById('resultado-relatorio').innerHTML = html;
-  document.getElementById('botoes-exportacao').style.display = 'flex';
-}
+      // Linha de TOTAL
+      html += `
+          <tr style="font-weight: bold; background-color: #333;">
+            <td>TOTAL GERAL</td>
+            <td>-</td>
+            <td>${agendamentosFiltrados.length}</td>
+            <td>${formatarMoeda(faturamentoTotal)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${agendamentosFiltrados.length})</h3>
+      <table class="tabela-relatorio">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Telefone</th>
+            <th>Serviço</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      // Adiciona os agendamentos
+      agendamentosFiltrados
+        .sort((a, b) => new Date(b.data) - new Date(a.data))
+        .slice(0, 10)
+        .forEach(ag => {
+          html += `
+            <tr>
+              <td>${formatarDataSimples(ag.data)}</td>
+              <td>${ag.nome}</td>
+              <td>${ag.telefone}</td>
+              <td>${ag.servico.split('-')[0].trim()}</td>
+              <td>${ag.servico.match(/R\$\s*[\d,]+/)?.[0] || 'N/A'}</td>
+            </tr>
+          `;
+        });
+
+      html += `</tbody></table>`;
+
+      document.getElementById('resultado-relatorio').innerHTML = html;
+      document.getElementById('botoes-exportacao').style.display = 'flex';
+    }
+
     // ===== FUNÇÕES DE EXPORTAÇÃO ===== //
     async function exportarParaPDF() {
       if (typeof jsPDF === 'undefined') {
@@ -1187,14 +1348,14 @@
       const servicosData = [];
       document.querySelectorAll('.tabela-relatorio:first-of-type tbody tr').forEach(row => {
         const cols = row.querySelectorAll('td');
-        if (cols.length === 3) {
-          servicosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent]);
+        if (cols.length === 4) {
+          servicosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent, cols[3].textContent]);
         }
       });
 
       doc.autoTable({
         startY: doc.lastAutoTable.finalY + 10,
-        head: [['Serviço', 'Quantidade', 'Faturamento']],
+        head: [['Serviço', 'Valor Unitário', 'Quantidade', 'Faturamento']],
         body: servicosData,
         theme: 'grid',
         headStyles: { fillColor: [108, 99, 255] }
@@ -1263,6 +1424,101 @@
         script.onerror = reject;
         document.head.appendChild(script);
       });
+    }
+
+    // ===== FUNÇÕES PARA REDES SOCIAIS ===== //
+    function adicionarRedeSocial(tipo = '', url = '') {
+      const container = document.getElementById('redes-sociais-salao');
+      const div = document.createElement('div');
+      div.className = 'rede-social-item';
+      
+      div.innerHTML = `
+        <select class="form-control rede-social-tipo">
+          <option value="">Selecione...</option>
+          <option value="whatsapp" ${tipo === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+          <option value="facebook" ${tipo === 'facebook' ? 'selected' : ''}>Facebook</option>
+          <option value="instagram" ${tipo === 'instagram' ? 'selected' : ''}>Instagram</option>
+          <option value="twitter" ${tipo === 'twitter' ? 'selected' : ''}>Twitter</option>
+          <option value="youtube" ${tipo === 'youtube' ? 'selected' : ''}>YouTube</option>
+          <option value="linkedin" ${tipo === 'linkedin' ? 'selected' : ''}>LinkedIn</option>
+        </select>
+        <input type="text" class="form-control rede-social-url" placeholder="URL da rede social" value="${url}">
+        <button type="button" class="btn btn-danger" onclick="removerRedeSocial(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      
+      container.appendChild(div);
+    }
+
+    function adicionarRedeSocialEdicao(tipo = '', url = '') {
+      const container = document.getElementById('editar-redes-sociais-salao');
+      const div = document.createElement('div');
+      div.className = 'rede-social-item';
+      
+      div.innerHTML = `
+        <select class="form-control rede-social-tipo">
+          <option value="">Selecione...</option>
+          <option value="whatsapp" ${tipo === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+          <option value="facebook" ${tipo === 'facebook' ? 'selected' : ''}>Facebook</option>
+          <option value="instagram" ${tipo === 'instagram' ? 'selected' : ''}>Instagram</option>
+          <option value="twitter" ${tipo === 'twitter' ? 'selected' : ''}>Twitter</option>
+          <option value="youtube" ${tipo === 'youtube' ? 'selected' : ''}>YouTube</option>
+          <option value="linkedin" ${tipo === 'linkedin' ? 'selected' : ''}>LinkedIn</option>
+        </select>
+        <input type="text" class="form-control rede-social-url" placeholder="URL da rede social" value="${url}">
+        <button type="button" class="btn btn-danger" onclick="removerRedeSocial(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      
+      container.appendChild(div);
+    }
+
+    function removerRedeSocial(btn) {
+      btn.parentElement.remove();
+    }
+
+    function mostrarRedesSociais(redes) {
+      const container = document.createElement('div');
+      container.className = 'icones-redes-sociais';
+      
+      redes.forEach(rede => {
+        if (rede.url) {
+          const link = document.createElement('a');
+          link.href = rede.url.startsWith('http') ? rede.url : `https://${rede.url}`;
+          link.target = '_blank';
+          link.className = `icone-rede-social icone-${rede.tipo}`;
+          
+          // Adiciona o ícone correspondente
+          switch(rede.tipo) {
+            case 'whatsapp':
+              link.innerHTML = '<i class="fab fa-whatsapp"></i>';
+              break;
+            case 'facebook':
+              link.innerHTML = '<i class="fab fa-facebook"></i>';
+              break;
+            case 'instagram':
+              link.innerHTML = '<i class="fab fa-instagram"></i>';
+              break;
+            case 'twitter':
+              link.innerHTML = '<i class="fab fa-twitter"></i>';
+              break;
+            case 'youtube':
+              link.innerHTML = '<i class="fab fa-youtube"></i>';
+              break;
+            case 'linkedin':
+              link.innerHTML = '<i class="fab fa-linkedin"></i>';
+              break;
+            default:
+              link.innerHTML = '<i class="fas fa-share-alt"></i>';
+          }
+          
+          container.appendChild(link);
+        }
+      });
+      
+      return container;
     }
 
     // Login do Salão
@@ -1374,6 +1630,17 @@
         }
       });
       
+      // Coleta as redes sociais cadastradas
+      const redesSociais = [];
+      document.querySelectorAll('.rede-social-item').forEach(item => {
+        const tipo = item.querySelector('.rede-social-tipo').value;
+        const url = item.querySelector('.rede-social-url').value.trim();
+        
+        if (tipo && url) {
+          redesSociais.push({ tipo, url });
+        }
+      });
+      
       // Cria o objeto do salão
       const novoSalao = {
         id: Date.now().toString(),
@@ -1387,6 +1654,7 @@
         funcionaDomingo,
         funcionaFeriado,
         servicos,
+        redesSociais,
         dataCriacao: new Date().toISOString(),
         urlPersonalizada: gerarUrlPersonalizada(nome)
       };
@@ -1404,6 +1672,7 @@
       
       document.getElementById('cadastro-salao-form').reset();
       document.getElementById('servicos-salao').innerHTML = '';
+      document.getElementById('redes-sociais-salao').innerHTML = '';
       await carregarSaloes();
     });
     
@@ -1544,6 +1813,20 @@
           selectServico.appendChild(option);
         });
       }
+
+      // Mostra as redes sociais se existirem
+      const redesContainer = document.getElementById('redes-sociais-container');
+      if (redesContainer) {
+        redesContainer.innerHTML = '<h3>Nossas Redes Sociais</h3>';
+        if (salao?.redesSociais?.length > 0) {
+          redesContainer.appendChild(mostrarRedesSociais(salao.redesSociais));
+        } else {
+          const mensagem = document.createElement('p');
+          mensagem.textContent = 'Siga-nos em nossas redes sociais em breve!';
+          mensagem.style.textAlign = 'center';
+          redesContainer.appendChild(mensagem);
+        }
+      }
     }
     
     // Função para cancelar agendamento
@@ -1639,6 +1922,16 @@
                   <i class="fas fa-plus"></i> Adicionar Serviço
                 </button>
               </div>
+
+              <div class="form-group">
+                <label>Redes Sociais</label>
+                <div id="editar-redes-sociais-salao">
+                  <!-- Redes sociais serão adicionadas aqui -->
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="adicionarRedeSocialEdicao()">
+                  <i class="fas fa-plus"></i> Adicionar Rede Social
+                </button>
+              </div>
               
               <div class="form-group">
                 <label>Link do Salão</label>
@@ -1675,6 +1968,16 @@
         });
       }
       
+      // Preenche as redes sociais
+      const redesContainer = document.getElementById('editar-redes-sociais-salao');
+      redesContainer.innerHTML = '';
+      
+      if (salao.redesSociais?.length > 0) {
+        salao.redesSociais.forEach(rede => {
+          adicionarRedeSocialEdicao(rede.tipo, rede.url);
+        });
+      }
+      
       // Configura o formulário de edição
       document.getElementById('editar-salao-form').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -1699,6 +2002,17 @@
           }
         });
         
+        // Coleta as redes sociais editadas
+        const redesSociais = [];
+        document.querySelectorAll('#editar-redes-sociais-salao .rede-social-item').forEach(item => {
+          const tipo = item.querySelector('.rede-social-tipo').value;
+          const url = item.querySelector('.rede-social-url').value.trim();
+          
+          if (tipo && url) {
+            redesSociais.push({ tipo, url });
+          }
+        });
+        
         // Atualiza o objeto do salão
         salao.nome = nome;
         salao.endereco = endereco;
@@ -1710,6 +2024,7 @@
         salao.funcionaDomingo = funcionaDomingo;
         salao.funcionaFeriado = funcionaFeriado;
         salao.servicos = servicos;
+        salao.redesSociais = redesSociais;
         salao.urlPersonalizada = gerarUrlPersonalizada(nome);
         
         // Salva as alterações
@@ -1854,6 +2169,11 @@
               { nome: 'Corte e Barba', valor: 'R$ 40,00' },
               { nome: 'Barba', valor: 'R$ 20,00' }
             ],
+            redesSociais: [
+              { tipo: 'facebook', url: 'https://facebook.com/aliconcortes' },
+              { tipo: 'instagram', url: 'https://instagram.com/aliconcortes' },
+              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' }
+            ],
             dataCriacao: new Date().toISOString(),
             urlPersonalizada: 'alicon-cortes-matriz'
           },
@@ -1872,6 +2192,9 @@
               { nome: 'Corte Simples', valor: 'R$ 20,00' },
               { nome: 'Corte Degradê', valor: 'R$ 25,00' },
               { nome: 'Sobrancelha', valor: 'R$ 15,00' }
+            ],
+            redesSociais: [
+              { tipo: 'instagram', url: 'https://instagram.com/aliconfilial' }
             ],
             dataCriacao: new Date().toISOString(),
             urlPersonalizada: 'alicon-cortes-filial'
