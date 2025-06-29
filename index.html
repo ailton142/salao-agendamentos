@@ -29,27 +29,79 @@
     }
     
     body {
-      background-color: var(--darker);
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)), 
+                  url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+      background-size: cover;
       color: var(--text);
+      min-height: 100vh;
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      position: relative;
+      z-index: 1;
     }
     
     /* Header */
     .header {
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.8), 
-        linear-gradient(to right, #2C2C2C, #1A1A1A));
-      padding: 40px 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
       text-align: center;
       color: white;
-      border-radius: 0;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+
+    .logo-container {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .logo-text {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .logo-text .multi {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .logo-text .sistemas {
+      font-size: 1.8rem;
+      color: white;
+      margin-top: -10px;
+    }
+
+    .logo-text .solucoes {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+      font-weight: normal;
     }
 
     .header h1 {
@@ -68,19 +120,38 @@
     
     /* Card */
     .card {
-      background: var(--dark);
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      background: rgba(30, 30, 30, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       padding: 25px;
       margin-bottom: 30px;
-      border: 1px solid #333;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
     }
     
     .card h2 {
       color: white;
       margin-bottom: 20px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.5rem;
+      position: relative;
+    }
+
+    .card h2::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background: var(--primary);
     }
     
     /* Formulário */
@@ -98,11 +169,11 @@
     .form-control {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 6px;
       font-size: 16px;
       transition: all 0.3s;
-      background-color: #2C2C2C;
+      background-color: rgba(40, 40, 40, 0.8);
       color: var(--text);
     }
     
@@ -110,7 +181,7 @@
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
       outline: none;
-      background-color: #333;
+      background-color: rgba(50, 50, 50, 0.9);
     }
     
     select.form-control {
@@ -196,7 +267,7 @@
     .tabs {
       display: flex;
       margin-bottom: 20px;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .tab {
@@ -210,6 +281,7 @@
     
     .tab:hover {
       color: var(--text);
+      background-color: rgba(255, 255, 255, 0.05);
     }
     
     .tab.active {
@@ -236,11 +308,11 @@
     th, td {
       padding: 12px 15px;
       text-align: left;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     th {
-      background-color: #2C2C2C;
+      background-color: rgba(44, 44, 44, 0.8);
       font-weight: 600;
       color: white;
     }
@@ -277,12 +349,12 @@
       display: block;
       margin-top: 10px;
       padding: 10px;
-      background-color: #2C2C2C;
+      background-color: rgba(44, 44, 44, 0.8);
       border-radius: 5px;
       word-break: break-all;
       color: var(--text-secondary);
       font-size: 14px;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .copy-link {
@@ -305,12 +377,12 @@
       position: fixed;
       bottom: 10px;
       right: 10px;
-      background: var(--dark);
+      background: rgba(30, 30, 30, 0.9);
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       z-index: 1000;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .api-switch label {
@@ -375,7 +447,7 @@
     }
 
     .icone-rede-social:hover {
-      transform: translateY(-3px);
+      transform: translateY(-3px) scale(1.1);
       color: var(--secondary);
     }
 
@@ -401,14 +473,14 @@
     }
     
     .modal-content {
-      background: var(--dark);
+      background: rgba(30, 30, 30, 0.95);
       padding: 20px;
       border-radius: 10px;
       width: 90%;
       max-width: 800px;
       max-height: 90vh;
       overflow-y: auto;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
     
@@ -418,7 +490,7 @@
       align-items: center;
       margin-bottom: 20px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .modal-header h2 {
@@ -431,7 +503,7 @@
       gap: 10px;
       margin-top: 20px;
       padding-top: 20px;
-      border-top: 1px solid #444;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* ===== ESTILOS PARA RELATÓRIO ===== */
@@ -450,18 +522,18 @@
 
     .tabela-relatorio td {
       padding: 10px;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .resumo-faturamento {
-      background-color: #2C2C2C;
+      background-color: rgba(44, 44, 44, 0.8);
       padding: 15px;
       border-radius: 8px;
       margin: 20px 0;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      border: 1px solid #444;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .resumo-item {
@@ -524,7 +596,7 @@
       .tabs {
         flex-direction: column;
         border-bottom: none;
-        border-left: 1px solid #444;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
       }
       
       .tab {
@@ -592,6 +664,13 @@
     <!-- Área Pública de Agendamento -->
     <div id="public-area" class="tab-content active">
       <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUCOES TECNOLOGICAS</div>
+          </div>
+        </div>
         <h1 id="salao-nome">Agendamentos</h1>
         <p>Agende seu horário com facilidade</p>
       </div>
@@ -654,6 +733,13 @@
     <!-- Área de Administração do Salão -->
     <div id="salao-admin" class="tab-content">
       <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUCOES TECNOLOGICAS</div>
+          </div>
+        </div>
         <h1>Área do Salão</h1>
         <p>Gerencie seus agendamentos</p>
       </div>
@@ -739,6 +825,13 @@
     <!-- Área de Administração Master -->
     <div id="master-admin" class="tab-content">
       <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUCOES TECNOLOGICAS</div>
+          </div>
+        </div>
         <h1>Área Master</h1>
         <p>Gerencie todos os salões</p>
       </div>
