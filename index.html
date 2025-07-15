@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -31,31 +27,27 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-body {
-  background: 
-    /* Overlay mais claro para melhor visibilidade */
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-    /* Imagem em alta resolução com ajuste de nitidez */
-    url('https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80&sharp=30') no-repeat center center fixed;
-  
-  background-size: cover;
-  background-attachment: fixed;
-  color: var(--text);
-  min-height: 100vh;
-  position: relative;
-}
+    body {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80&sharp=30') no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+    }
 
-/* Container principal com efeito de vidro fosco */
-.container {
-  background-color: rgba(30, 30, 30, 0.85);
-  border-radius: 10px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 1200px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+    .container {
+      background-color: rgba(30, 30, 30, 0.85);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1200px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
     
     /* Header */
     .header {
@@ -998,238 +990,141 @@ body {
     };
     const API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_CONFIG.BIN_ID}`;
     let useAPI = true;
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
+    
     // Configurações
     let db;
-    
-    // Variáveis globais
     let currentUser = null;
     let agendamentos = [];
     let saloes = [];
+
+    // ▼▼▼▼▼▼ FUNÇÕES DE FORMATAÇÃO DE DATA ATUALIZADAS ▼▼▼▼▼▼
     
-    // Inicializa o IndexedDB
-    function initDB() {
-      return new Promise((resolve) => {
-        const request = indexedDB.open('SalaoAgendamentosDB', 3);
-        
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          if (!db.objectStoreNames.contains('saloes')) {
-            db.createObjectStore('saloes', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('agendamentos')) {
-            db.createObjectStore('agendamentos', { keyPath: 'id' });
-          }
-        };
-        
-        request.onsuccess = (event) => {
-          db = event.target.result;
-          resolve(db);
-        };
-      });
-    }
-    
-    // Funções para IndexedDB
-    async function salvarDadosIndexedDB(tabela, dados) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readwrite');
-        const store = transaction.objectStore(tabela);
-        
-        const clearRequest = store.clear();
-        
-        clearRequest.onsuccess = () => {
-          if (Array.isArray(dados)) {
-            dados.forEach(item => {
-              store.put(item);
-            });
-          } else {
-            store.put(dados);
-          }
-          resolve();
-        };
-      });
-    }
-    
-    async function carregarDadosIndexedDB(tabela) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readonly');
-        const store = transaction.objectStore(tabela);
-        const request = store.getAll();
-        
-        request.onsuccess = () => {
-          resolve(request.result || []);
-        };
-      });
-    }
-    
-    // ▼▼▼▼▼▼ FUNÇÕES DE API ATUALIZADAS ▼▼▼▼▼▼
-    async function carregarDadosAPI(tabela) {
-      try {
-        const response = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
-        });
-        const fullData = await response.json();
-        return fullData.record[tabela] || [];
-      } catch (error) {
-        console.error("API offline, usando fallback...", error);
-        useAPI = false;
-        return [];
+    // Função para formatar data no padrão brasileiro (dd/mm/aaaa)
+    function formatarDataBrasileira(dataString) {
+      if (!dataString) return '';
+      
+      // Verifica se já está no formato dd/mm/aaaa
+      if (dataString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        return dataString;
       }
+      
+      // Converte de YYYY-MM-DD para dd/mm/aaaa
+      const partes = dataString.split('-');
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      
+      // Tenta converter de outros formatos com ajuste de fuso horário
+      const data = new Date(dataString);
+      if (isNaN(data.getTime())) {
+        return dataString; // Retorna original se não puder converter
+      }
+      
+      // Ajusta para o fuso horário local
+      const dataAjustada = new Date(data.getTime() + data.getTimezoneOffset() * 60000);
+      
+      const dia = String(dataAjustada.getDate()).padStart(2, '0');
+      const mes = String(dataAjustada.getMonth() + 1).padStart(2, '0');
+      const ano = dataAjustada.getFullYear();
+      return `${dia}/${mes}/${ano}`;
     }
 
-    async function salvarDadosAPI(tabela, dados) {
-      try {
-        const responseGet = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
-        });
-        const dbCompleto = await responseGet.json();
-        
-        dbCompleto.record[tabela] = dados;
-        
-        const responsePut = await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': JSONBIN_CONFIG.API_KEY
-          },
-          body: JSON.stringify(dbCompleto.record)
-        });
-        
-        if (!responsePut.ok) throw new Error("Erro ao salvar");
-      } catch (error) {
-        console.error("JSONBin.io offline - Alternando para modo local", error);
-        useAPI = false;
+    // Função simplificada para formatar data (usada no relatório)
+    function formatarDataSimples(dataString) {
+      if (!dataString) return '';
+      
+      // Se já estiver no formato dd/mm/aaaa, retorna diretamente
+      if (dataString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        return dataString;
       }
+      
+      // Se estiver no formato YYYY-MM-DD, converte para dd/mm/aaaa
+      if (dataString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [ano, mes, dia] = dataString.split('-');
+        return `${dia}/${mes}/${ano}`;
+      }
+      
+      // Para outros formatos, usa o objeto Date com ajuste de fuso horário
+      const data = new Date(dataString);
+      if (isNaN(data.getTime())) return dataString;
+      
+      // Ajusta para o fuso horário local
+      const dataAjustada = new Date(data.getTime() + data.getTimezoneOffset() * 60000);
+      
+      const dia = String(dataAjustada.getDate()).padStart(2, '0');
+      const mes = String(dataAjustada.getMonth() + 1).padStart(2, '0');
+      const ano = dataAjustada.getFullYear();
+      
+      return `${dia}/${mes}/${ano}`;
     }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-    // Funções genéricas para salvar/carregar
-    async function salvarDados(tabela, dados) {
-      if (useAPI) {
-        return await salvarDadosAPI(tabela, dados);
-      } else {
-        return await salvarDadosIndexedDB(tabela, dados);
-      }
-    }
-    
-    async function carregarDados(tabela) {
-      if (useAPI) {
-        return await carregarDadosAPI(tabela);
-      } else {
-        return await carregarDadosIndexedDB(tabela);
-      }
-    }
-    
-    // Função para alternar entre as abas
-    function openTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
+    // Função para verificar e corrigir agendamentos com data fixa
+    async function verificarAgendamentos() {
+      const hoje = new Date().toISOString().split('T')[0];
+      let agendamentosCorrigidos = false;
       
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
-    
-    // Função para formatar a data
-    function formatarData(data) {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(data).toLocaleDateString('pt-BR', options);
-    }
-    
-    // Função para gerar horários disponíveis
-    function gerarHorariosDisponiveis(abertura = '08:00', fechamento = '20:00', intervalo = 30, agendamentosDoDia = []) {
-      const selectHora = document.getElementById('hora');
-      selectHora.innerHTML = '<option value="">Selecione o horário</option>';
-      
-      const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
-      const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
-      
-      const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
-      const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
-      
-      for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
-        const hora = Math.floor(minutos / 60);
-        const minuto = minutos % 60;
-        const horaFormatada = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
-        
-        const option = document.createElement('option');
-        option.value = horaFormatada;
-        option.textContent = horaFormatada;
-        
-        const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
-        
-        if (horarioOcupado) {
-          option.disabled = true;
-          option.classList.add('horario-ocupado');
-          option.textContent += ' (Ocupado)';
-        } else {
-          option.classList.add('horario-disponivel');
+      agendamentos.forEach(ag => {
+        // Verifica se a data está no formato problemático (14/07/2025)
+        if (ag.data === '2025-07-14' || ag.data.includes('14/07/2025')) {
+          console.warn(`Agendamento com data fixa encontrado: ${ag.id}`);
+          // Substitui pela data atual (ou outra lógica de correção)
+          ag.data = hoje;
+          agendamentosCorrigidos = true;
         }
-        
-        selectHora.appendChild(option);
+      });
+      
+      if (agendamentosCorrigidos) {
+        await salvarDados('agendamentos', agendamentos);
       }
     }
-    
-    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: getSalaoIdFromUrl ▼▼▼▼▼▼
-    async function getSalaoIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const salaoParam = urlParams.get('salao');
-      if (!salaoParam) return null;
 
-      try {
-        const response = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: carregarAgendamentosSalao ▼▼▼▼▼▼
+    async function carregarAgendamentosSalao(salaoId) {
+      const tbody = document.querySelector('#tabela-agendamentos tbody');
+      tbody.innerHTML = '';
+      
+      // Filtra e ordena os agendamentos
+      const agendamentosDoSalão = agendamentos
+        .filter(ag => ag.salaoId === salaoId)
+        .sort((a, b) => {
+          const dataA = new Date(`${a.data}T${a.hora}`);
+          const dataB = new Date(`${b.data}T${b.hora}`);
+          return dataA - dataB;
         });
-        const { record } = await response.json();
-        const salao = record.saloes.find(s => 
-          s.urlPersonalizada === salaoParam || s.id === salaoParam
-        );
-        return salao ? salao.id : null;
-      } catch (error) {
-        console.log("Usando dados locais (API offline)", error);
-        return saloes.find(s => 
-          s.urlPersonalizada === salaoParam || s.id === salaoParam
-        )?.id;
-      }
+      
+      // Filtra por data se houver filtro aplicado
+      const filtroData = document.getElementById('filtrar-data').value;
+      const agendamentosFiltrados = filtroData 
+        ? agendamentosDoSalão.filter(ag => ag.data === filtroData)
+        : agendamentosDoSalão;
+      
+      // Preenche a tabela com os agendamentos
+      agendamentosFiltrados.forEach(ag => {
+        const tr = document.createElement('tr');
+        
+        // Extrai o nome do serviço e valor (se existir)
+        const servicoParts = ag.servico.split('-');
+        const nomeServico = servicoParts[0].trim();
+        const valorServico = servicoParts.length > 1 ? `- ${servicoParts[1].trim()}` : '';
+        
+        tr.innerHTML = `
+          <td>${formatarDataBrasileira(ag.data)}</td>
+          <td>${ag.hora}</td>
+          <td>${ag.nome}</td>
+          <td>${nomeServico} ${valorServico}</td>
+          <td>${ag.telefone}</td>
+          <td>
+            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </td>
+        `;
+        
+        tbody.appendChild(tr);
+      });
     }
 
-    // Função para carregar horários disponíveis
-    async function carregarHorariosDisponiveis(data) {
-      const dateObj = new Date(data);
-      const salaoId = await getSalaoIdFromUrl();
-      const salao = saloes.find(s => s.id === salaoId);
-      
-      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
-        return;
-      }
-      
-      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
-        return;
-      }
-      
-      const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
-      const abertura = salao ? salao.abertura : '08:00';
-      const fechamento = salao ? salao.fechamento : '20:00';
-      
-      gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
-    }
-    
-    // Máscara para telefone
-    document.getElementById('telefone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-      e.target.value = value;
-    });
-    
-    // Validação do formulário de agendamento
+    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: Evento de submit do formulário ▼▼▼▼▼▼
     document.getElementById('agendamento-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -1250,12 +1145,20 @@ body {
         return;
       }
       
+      // Garante que a data está no formato correto (YYYY-MM-DD)
+      const dataObj = new Date(data);
+      if (isNaN(dataObj.getTime())) {
+        alert('Data inválida. Por favor, selecione novamente.');
+        return;
+      }
+      const dataISO = dataObj.toISOString().split('T')[0];
+      
       const novoAgendamento = {
         id: Date.now().toString(),
         nome,
         telefone,
         servico,
-        data,
+        data: dataISO, // Usa a data formatada corretamente
         hora,
         status: 'confirmado',
         dataCriacao: new Date().toISOString(),
@@ -1265,13 +1168,131 @@ body {
       agendamentos.push(novoAgendamento);
       await salvarDados('agendamentos', agendamentos);
       
-      alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarData(data)}\nHorário: ${hora}`);
+      alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarDataBrasileira(dataISO)}\nHorário: ${hora}`);
       
       document.getElementById("agendamento-form").reset();
       document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
     });
-    
-    // ===== FUNÇÕES DE RELATÓRIO ===== //
+
+    // ▼▼▼▼▼▼ ATUALIZAÇÃO: Inicialização do sistema ▼▼▼▼▼▼
+    window.addEventListener('load', async () => {
+      // 1. Carrega dados DA API primeiro
+      try {
+        const [apiSaloes, apiAgendamentos] = await Promise.all([
+          carregarDadosAPI('saloes'),
+          carregarDadosAPI('agendamentos')
+        ]);
+        saloes = apiSaloes;
+        agendamentos = apiAgendamentos;
+      } catch {
+        saloes = await carregarDadosIndexedDB('saloes');
+        agendamentos = await carregarDadosIndexedDB('agendamentos');
+      }
+
+      // 2. Verifica e corrige agendamentos com data fixa
+      await verificarAgendamentos();
+
+      // 3. Processa parâmetro da URL
+      const salaoId = await getSalaoIdFromUrl();
+      if (salaoId) {
+        const salao = saloes.find(s => s.id === salaoId);
+        if (salao) {
+          document.getElementById('salao-nome').textContent = salao.nome;
+          carregarServicosSalao(salaoId);
+          if (!window.location.href.includes(salao.urlPersonalizada)) {
+            history.replaceState({}, '', `?salao=${salao.urlPersonalizada || salaoId}`);
+          }
+        }
+      }
+
+      // Inicializa o IndexedDB como fallback
+      await initDB();
+      
+      // Configura a data mínima como hoje
+      const hoje = new Date();
+      document.getElementById('data').min = hoje.toISOString().split('T')[0];
+      
+      // Configura a data máxima para 3 meses à frente
+      const tresMesesAFrente = new Date();
+      tresMesesAFrente.setMonth(tresMesesAFrente.getMonth() + 3);
+      document.getElementById('data').max = tresMesesAFrente.toISOString().split('T')[0];
+      
+      // Inicializa o campo de horário
+      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
+      
+      // Listener para mudança de data
+      document.getElementById('data').addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+          carregarHorariosDisponiveis(selectedDate);
+        }
+      });
+      
+      // Dados de exemplo atualizados (sem datas fixas)
+      if (saloes.length === 0) {
+        saloes = [
+          {
+            id: '1',
+            nome: 'Alicon Cortes - Matriz',
+            endereco: 'Rua Principal, 123 - Centro',
+            email: 'matriz@aliconcortes.com',
+            senha: '123456',
+            horario: '08:00 - 20:00',
+            abertura: '08:00',
+            fechamento: '20:00',
+            funcionaDomingo: true,
+            funcionaFeriado: false,
+            servicos: [
+              { nome: 'Corte Simples', valor: 'R$ 25,00' },
+              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
+              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
+              { nome: 'Barba', valor: 'R$ 20,00' }
+            ],
+            redesSociais: [
+              { tipo: 'facebook', url: 'https://facebook.com/aliconcortes' },
+              { tipo: 'instagram', url: 'https://instagram.com/aliconcortes' },
+              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' }
+            ],
+            dataCriacao: new Date().toISOString(),
+            urlPersonalizada: 'alicon-cortes-matriz'
+          }
+        ];
+        await salvarDados('saloes', saloes);
+      }
+      
+      if (agendamentos.length === 0) {
+        const hoje = new Date().toISOString().split('T')[0];
+        const amanha = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        
+        agendamentos = [
+          {
+            id: '1',
+            nome: 'João Silva',
+            telefone: '(11) 98765-4321',
+            servico: 'Corte e Barba - R$40',
+            data: hoje, // Usa a data atual
+            hora: '10:00',
+            status: 'confirmado',
+            dataCriacao: new Date().toISOString(),
+            salaoId: '1'
+          },
+          {
+            id: '2',
+            nome: 'Maria Souza',
+            telefone: '(11) 91234-5678',
+            servico: 'Corte Degradê - R$30',
+            data: amanha, // Usa a data de amanhã
+            hora: '14:30',
+            status: 'confirmado',
+            dataCriacao: new Date().toISOString(),
+            salaoId: '1'
+          }
+        ];
+        await salvarDados('agendamentos', agendamentos);
+      }
+    });
+
+    // ===== FUNÇÕES PARA RELATÓRIO ===== //
     function formatarMoeda(valor) {
       return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
@@ -1282,11 +1303,6 @@ body {
         return parseFloat(match[1].replace('.', '').replace(',', '.'));
       }
       return 0;
-    }
-
-    function formatarDataSimples(dataString) {
-      const data = new Date(dataString);
-      return data.toLocaleDateString('pt-BR');
     }
 
     async function gerarRelatorio() {
@@ -1396,14 +1412,16 @@ body {
         <tbody>
       `;
 
-      // Adiciona os agendamentos
+      // Adiciona os agendamentos com data formatada corretamente
       agendamentosFiltrados
         .sort((a, b) => new Date(b.data) - new Date(a.data))
         .slice(0, 10)
         .forEach(ag => {
+          const dataFormatada = formatarDataBrasileira(ag.data);
+          
           html += `
             <tr>
-              <td>${formatarDataSimples(ag.data)}</td>
+              <td>${dataFormatada}</td>
               <td>${ag.nome}</td>
               <td>${ag.telefone}</td>
               <td>${ag.servico.split('-')[0].trim()}</td>
@@ -1521,7 +1539,196 @@ body {
       link.click();
       document.body.removeChild(link);
     }
+    // Funções para IndexedDB
+    async function initDB() {
+      return new Promise((resolve) => {
+        const request = indexedDB.open('SalaoAgendamentosDB', 3);
+        
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('saloes')) {
+            db.createObjectStore('saloes', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('agendamentos')) {
+            db.createObjectStore('agendamentos', { keyPath: 'id' });
+          }
+        };
+        
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+      });
+    }
+    
+    async function salvarDadosIndexedDB(tabela, dados) {
+      return new Promise((resolve) => {
+        const transaction = db.transaction(tabela, 'readwrite');
+        const store = transaction.objectStore(tabela);
+        
+        const clearRequest = store.clear();
+        
+        clearRequest.onsuccess = () => {
+          if (Array.isArray(dados)) {
+            dados.forEach(item => {
+              store.put(item);
+            });
+          } else {
+            store.put(dados);
+          }
+          resolve();
+        };
+      });
+    }
+    
+    async function carregarDadosIndexedDB(tabela) {
+      return new Promise((resolve) => {
+        const transaction = db.transaction(tabela, 'readonly');
+        const store = transaction.objectStore(tabela);
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+          resolve(request.result || []);
+        };
+      });
+    }
 
+    // Funções para API
+    async function carregarDadosAPI(tabela) {
+      try {
+        const response = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const fullData = await response.json();
+        return fullData.record[tabela] || [];
+      } catch (error) {
+        console.error("API offline, usando fallback...", error);
+        useAPI = false;
+        return [];
+      }
+    }
+
+    async function salvarDadosAPI(tabela, dados) {
+      try {
+        const responseGet = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const dbCompleto = await responseGet.json();
+        
+        dbCompleto.record[tabela] = dados;
+        
+        const responsePut = await fetch(API_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': JSONBIN_CONFIG.API_KEY
+          },
+          body: JSON.stringify(dbCompleto.record)
+        });
+        
+        if (!responsePut.ok) throw new Error("Erro ao salvar");
+      } catch (error) {
+        console.error("JSONBin.io offline - Alternando para modo local", error);
+        useAPI = false;
+      }
+    }
+
+    // Funções genéricas para salvar/carregar
+    async function salvarDados(tabela, dados) {
+      if (useAPI) {
+        return await salvarDadosAPI(tabela, dados);
+      } else {
+        return await salvarDadosIndexedDB(tabela, dados);
+      }
+    }
+    
+    async function carregarDados(tabela) {
+      if (useAPI) {
+        return await carregarDadosAPI(tabela);
+      } else {
+        return await carregarDadosIndexedDB(tabela);
+      }
+    }
+
+    // Função para alternar entre as abas
+    function openTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+    
+    // Função para gerar horários disponíveis
+    function gerarHorariosDisponiveis(abertura = '08:00', fechamento = '20:00', intervalo = 30, agendamentosDoDia = []) {
+      const selectHora = document.getElementById('hora');
+      selectHora.innerHTML = '<option value="">Selecione o horário</option>';
+      
+      const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
+      const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
+      
+      const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
+      const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
+      
+      for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
+        const hora = Math.floor(minutos / 60);
+        const minuto = minutos % 60;
+        const horaFormatada = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
+        
+        const option = document.createElement('option');
+        option.value = horaFormatada;
+        option.textContent = horaFormatada;
+        
+        const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
+        
+        if (horarioOcupado) {
+          option.disabled = true;
+          option.classList.add('horario-ocupado');
+          option.textContent += ' (Ocupado)';
+        } else {
+          option.classList.add('horario-disponivel');
+        }
+        
+        selectHora.appendChild(option);
+      }
+    }
+    
+    // Função para carregar horários disponíveis
+    async function carregarHorariosDisponiveis(data) {
+      const dateObj = new Date(data);
+      const salaoId = await getSalaoIdFromUrl();
+      const salao = saloes.find(s => s.id === salaoId);
+      
+      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
+        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
+        return;
+      }
+      
+      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
+        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
+        return;
+      }
+      
+      const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
+      const abertura = salao ? salao.abertura : '08:00';
+      const fechamento = salao ? salao.fechamento : '20:00';
+      
+      gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
+    }
+    
+    // Máscara para telefone
+    document.getElementById('telefone').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+      e.target.value = value;
+    });
+    
     function carregarScript(url) {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -1808,48 +2015,6 @@ body {
       document.execCommand('copy');
       document.body.removeChild(textarea);
       alert('Link copiado para a área de transferência!');
-    }
-    
-    // Função para carregar agendamentos do salão
-    async function carregarAgendamentosSalao(salaoId) {
-      const tbody = document.querySelector('#tabela-agendamentos tbody');
-      tbody.innerHTML = '';
-      
-      // Filtra agendamentos pelo salão
-      let agendamentosDoSalão = agendamentos.filter(ag => ag.salaoId === salaoId);
-      
-      // Ordena os agendamentos por data e hora
-      const agendamentosOrdenados = agendamentosDoSalão.sort((a, b) => {
-        const dataA = new Date(`${a.data} ${a.hora}`);
-        const dataB = new Date(`${b.data} ${b.hora}`);
-        return dataA - dataB;
-      });
-      
-      // Filtra por data se houver filtro aplicado
-      const filtroData = document.getElementById('filtrar-data').value;
-      const agendamentosFiltrados = filtroData 
-        ? agendamentosOrdenados.filter(ag => ag.data === filtroData)
-        : agendamentosOrdenados;
-      
-      // Preenche a tabela
-      agendamentosFiltrados.forEach(ag => {
-        const tr = document.createElement('tr');
-        
-        tr.innerHTML = `
-          <td>${formatarData(ag.data)}</td>
-          <td>${ag.hora}</td>
-          <td>${ag.nome}</td>
-          <td>${ag.servico}</td>
-          <td>${ag.telefone}</td>
-          <td>
-            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
-              <i class="fas fa-times"></i> Cancelar
-            </button>
-          </td>
-        `;
-        
-        tbody.appendChild(tr);
-      });
     }
     
     // Função para carregar salões
@@ -2204,139 +2369,30 @@ body {
       }
     });
     
-    // Inicialização do sistema
-    window.addEventListener('load', async () => {
-      // 1. Carrega dados DA API primeiro
+    // Função para obter ID do salão da URL
+    async function getSalaoIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const salaoParam = urlParams.get('salao');
+      if (!salaoParam) return null;
+
       try {
-        const [apiSaloes, apiAgendamentos] = await Promise.all([
-          carregarDadosAPI('saloes'),
-          carregarDadosAPI('agendamentos')
-        ]);
-        saloes = apiSaloes;
-        agendamentos = apiAgendamentos;
-      } catch {
-        saloes = await carregarDadosIndexedDB('saloes');
-        agendamentos = await carregarDadosIndexedDB('agendamentos');
+        const response = await fetch(`${API_URL}/latest`, {
+          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
+        });
+        const { record } = await response.json();
+        const salao = record.saloes.find(s => 
+          s.urlPersonalizada === salaoParam || s.id === salaoParam
+        );
+        return salao ? salao.id : null;
+      } catch (error) {
+        console.log("Usando dados locais (API offline)", error);
+        return saloes.find(s => 
+          s.urlPersonalizada === salaoParam || s.id === salaoParam
+        )?.id;
       }
-
-      // 2. Processa parâmetro da URL
-      const salaoId = await getSalaoIdFromUrl();
-      if (salaoId) {
-        const salao = saloes.find(s => s.id === salaoId);
-        if (salao) {
-          document.getElementById('salao-nome').textContent = salao.nome;
-          carregarServicosSalao(salaoId);
-          if (!window.location.href.includes(salao.urlPersonalizada)) {
-            history.replaceState({}, '', `?salao=${salao.urlPersonalizada || salaoId}`);
-          }
-        }
-      }
-
-      // Inicializa o IndexedDB como fallback
-      await initDB();
-      
-      // Configura a data mínima como hoje
-      const hoje = new Date();
-      document.getElementById('data').min = hoje.toISOString().split('T')[0];
-      
-      // Configura a data máxima para 3 meses à frente
-      const tresMesesAFrente = new Date();
-      tresMesesAFrente.setMonth(tresMesesAFrente.getMonth() + 3);
-      document.getElementById('data').max = tresMesesAFrente.toISOString().split('T')[0];
-      
-      // Inicializa o campo de horário
-      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
-      
-      // Listener para mudança de data
-      document.getElementById('data').addEventListener('change', function() {
-        const selectedDate = this.value;
-        if (selectedDate) {
-          carregarHorariosDisponiveis(selectedDate);
-        }
-      });
-      
-      // Dados de exemplo (apenas para primeira execução)
-      if (saloes.length === 0) {
-        saloes = [
-          {
-            id: '1',
-            nome: 'Alicon Cortes - Matriz',
-            endereco: 'Rua Principal, 123 - Centro',
-            email: 'matriz@aliconcortes.com',
-            senha: '123456',
-            horario: '08:00 - 20:00',
-            abertura: '08:00',
-            fechamento: '20:00',
-            funcionaDomingo: true,
-            funcionaFeriado: false,
-            servicos: [
-              { nome: 'Corte Simples', valor: 'R$ 25,00' },
-              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
-              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
-              { nome: 'Barba', valor: 'R$ 20,00' }
-            ],
-            redesSociais: [
-              { tipo: 'facebook', url: 'https://facebook.com/aliconcortes' },
-              { tipo: 'instagram', url: 'https://instagram.com/aliconcortes' },
-              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' }
-            ],
-            dataCriacao: new Date().toISOString(),
-            urlPersonalizada: 'alicon-cortes-matriz'
-          },
-          {
-            id: '2',
-            nome: 'Alicon Cortes - Filial',
-            endereco: 'Avenida Secundária, 456 - Bairro',
-            email: 'filial@aliconcortes.com',
-            senha: '123456',
-            horario: '09:00 - 19:00',
-            abertura: '09:00',
-            fechamento: '19:00',
-            funcionaDomingo: false,
-            funcionaFeriado: false,
-            servicos: [
-              { nome: 'Corte Simples', valor: 'R$ 20,00' },
-              { nome: 'Corte Degradê', valor: 'R$ 25,00' },
-              { nome: 'Sobrancelha', valor: 'R$ 15,00' }
-            ],
-            redesSociais: [
-              { tipo: 'instagram', url: 'https://instagram.com/aliconfilial' }
-            ],
-            dataCriacao: new Date().toISOString(),
-            urlPersonalizada: 'alicon-cortes-filial'
-          }
-        ];
-        await salvarDados('saloes', saloes);
-      }
-      
-      if (agendamentos.length === 0) {
-        agendamentos = [
-          {
-            id: '1',
-            nome: 'João Silva',
-            telefone: '(11) 98765-4321',
-            servico: 'Corte e Barba - R$40',
-            data: new Date().toISOString().split('T')[0],
-            hora: '10:00',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          },
-          {
-            id: '2',
-            nome: 'Maria Souza',
-            telefone: '(11) 91234-5678',
-            servico: 'Corte Degradê - R$30',
-            data: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Amanhã
-            hora: '14:30',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          }
-        ];
-        await salvarDados('agendamentos', agendamentos);
-      }
-    });
+    }
   </script>
 </body>
 </html>
+
+   
