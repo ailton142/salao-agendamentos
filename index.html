@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-@@ -31,31 +27,27 @@
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barbearia Moderna - Agendamento Online</title>
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #FFD700; /* Amarelo dourado */
+      --secondary: #D4AF37; /* Amarelo metálico */
+      --success: #28A745;
+      --danger: #DC3545;
+      --warning: #FFC107;
+      --light: #F8F9FA;
+      --dark: #1A1A1A;
+      --darker: #121212;
+      --text: #FFFFFF;
+      --text-secondary: #B0B0B0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-body {
-  background: 
-    /* Overlay mais claro para melhor visibilidade */
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
-    /* Imagem em alta resolução com ajuste de nitidez */
-    url('https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80&sharp=30') no-repeat center center fixed;
-  
-  background-size: cover;
-  background-attachment: fixed;
-  color: var(--text);
-  min-height: 100vh;
-  position: relative;
-}
-
-/* Container principal com efeito de vidro fosco */
-.container {
-  background-color: rgba(30, 30, 30, 0.85);
-  border-radius: 10px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 1200px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+    
     body {
       background: 
-        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)),
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)),
         url('https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80&sharp=30') no-repeat center center fixed;
       background-size: cover;
       background-attachment: fixed;
@@ -42,157 +39,990 @@ body {
     }
 
     .container {
-      background-color: rgba(30, 30, 30, 0.85);
+      background-color: rgba(30, 30, 30, 0.7);
       border-radius: 10px;
       padding: 20px;
       margin: 20px auto;
       max-width: 1200px;
       box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Header */
+    .header {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      text-align: center;
+      color: white;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+
+    .logo-container {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .logo-text {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .logo-text .multi {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .logo-text .sistemas {
+      font-size: 1.3rem;
+      color: white;
+      margin-top: -5px;
+    }
+
+    .logo-text .solucoes {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      font-weight: normal;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary);
+    }
+
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+      color: var(--text-secondary);
+    }
+    
+    /* Card */
+    .card {
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    .card h2 {
+      color: white;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.5rem;
+      position: relative;
+    }
+
+    .card h2::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background: var(--primary);
+    }
+    
+    /* Formulário */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: rgba(40, 40, 40, 0.8);
+      color: var(--text);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+      outline: none;
+      background-color: rgba(50, 50, 50, 0.9);
+    }
+    
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23B0B0B0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+    }
+    
+    /* Botões */
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: #333;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-secondary {
+      background-color: #444;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #555;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    /* Estilos para horários */
+    .horario-ocupado {
+      color: #ff6b6b;
+      text-decoration: line-through;
+      background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .horario-disponivel {
+      color: #51cf66;
+    }
+    
+    /* Layout responsivo */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -15px;
+    }
+    
+    .col-md-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+      padding: 0 15px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .tab:hover {
+      color: var(--text);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .tab.active {
+      border-bottom-color: var(--primary);
+      color: var(--text);
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    th {
+      background-color: rgba(44, 44, 44, 0.8);
+      font-weight: 600;
+      color: white;
+    }
+    
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background-color: rgba(40, 167, 69, 0.2);
+      color: #51cf66;
+    }
+    
+    .badge-danger {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: #ff6b6b;
+    }
+    
+    .badge-warning {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: #fcc419;
+    }
+    
+    /* Link do salão */
+    .salao-link {
+      display: block;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: rgba(44, 44, 44, 0.8);
+      border-radius: 5px;
+      word-break: break-all;
+      color: var(--text-secondary);
+      font-size: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .copy-link {
+      margin-left: 10px;
+      padding: 3px 8px;
+      font-size: 12px;
+      background-color: var(--primary);
+      color: #333;
+      border-radius: 3px;
+      cursor: pointer;
+      float: right;
+    }
+    
+    .copy-link:hover {
+      background-color: var(--secondary);
+    }
+    
+    /* Switch para JSON Server */
+    .api-switch {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(30, 30, 30, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 1000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .api-switch label {
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    #api-status {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    /* Serviços do salão */
+    .servicos-container {
+      margin-top: 20px;
+    }
+    
+    .servico-item {
+      display: flex;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+    
+    .servico-item input {
+      flex: 1;
+    }
+    
+    .servico-item .btn {
+      width: auto;
+      padding: 10px;
+    }
+
+    /* Redes Sociais */
+    .rede-social-item {
+      display: flex;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .rede-social-item select {
+      flex: 1;
+      max-width: 150px;
+    }
+
+    .rede-social-item input {
+      flex: 2;
+    }
+
+    .icones-redes-sociais {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .icone-rede-social {
+      font-size: 24px;
+      color: var(--primary);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .icone-rede-social:hover {
+      transform: translateY(-3px) scale(1.1);
+      color: var(--secondary);
+    }
+
+    .icone-whatsapp { color: #25D366; }
+    .icone-facebook { color: #1877F2; }
+    .icone-instagram { color: #E4405F; }
+    .icone-twitter { color: #1DA1F2; }
+    .icone-youtube { color: #FF0000; }
+    .icone-linkedin { color: #0A66C2; }
+    
+    /* Modal de edição */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: rgba(30, 30, 30, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-header h2 {
+      color: white;
+    }
+    
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* ===== ESTILOS PARA RELATÓRIO ===== */
+    .tabela-relatorio {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .tabela-relatorio th {
+      background-color: var(--primary);
+      color: #333;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .tabela-relatorio td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .resumo-faturamento {
+      background-color: rgba(44, 44, 44, 0.8);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Header */
-    .header {
-@@ -998,238 +990,141 @@ <h2>Salões Cadastrados</h2>
+    .resumo-item {
+      margin: 5px 0;
+      color: var(--text);
+    }
+
+    .resumo-item strong {
+      color: var(--text);
+    }
+
+    .btn-relatorio {
+      margin: 10px 0;
+    }
+
+    /* ===== ESTILOS PARA EXPORTAÇÃO ===== */
+    .botoes-exportacao {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .btn-exportar {
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+
+    .btn-exportar-pdf {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+    }
+
+    .btn-exportar-pdf:hover {
+      background-color: #c0392b;
+    }
+
+    .btn-exportar-csv {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+    }
+
+    .btn-exportar-csv:hover {
+      background-color: #219653;
+    }
+
+    @media (max-width: 768px) {
+      .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+      
+      .tabs {
+        flex-direction: column;
+        border-bottom: none;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .tab {
+        border-bottom: none;
+        border-left: 3px solid transparent;
+      }
+      
+      .tab.active {
+        border-bottom: none;
+        border-left-color: var(--primary);
+      }
+      
+      .servico-item {
+        flex-direction: column;
+      }
+      
+      .servico-item input {
+        margin-right: 0;
+        margin-bottom: 5px;
+      }
+
+      .rede-social-item {
+        flex-direction: column;
+      }
+
+      .rede-social-item select {
+        max-width: 100%;
+      }
+      
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+
+      /* Responsivo para o resumo */
+      .resumo-faturamento {
+        flex-direction: column;
+      }
+      
+      .botoes-exportacao {
+        flex-direction: column;
+      }
+    }
+
+    /* Adicionando um pouco de animação */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .tab-content {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Tabs de navegação -->
+    <div class="tabs">
+      <div class="tab active" onclick="openTab('public-area')">Agendamento</div>
+      <div class="tab" onclick="openTab('salao-admin')">Admin Salão</div>
+      <div class="tab" onclick="openTab('master-admin')">Admin Master</div>
+    </div>
+    
+    <!-- Área Pública de Agendamento -->
+    <div id="public-area" class="tab-content active">
+      <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUÇÕES TECNOLÓGICAS</div>
+          </div>
+        </div>
+        <h1 id="salao-nome">AGENDAMENTOS</h1>
+        <p>Agende seu horário com facilidade</p>
+      </div>
+      
+      <div class="card">
+        <form id="agendamento-form">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" class="form-control" placeholder="Digite seu nome" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="tel" id="telefone" class="form-control" placeholder="(00) 00000-0000" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="servico">Serviço</label>
+            <select id="servico" class="form-control" required>
+              <option value="">Escolha um serviço</option>
+              <option value="Corte Simples - R$25">Corte Simples - R$25</option>
+              <option value="Corte Degradê - R$30">Corte Degradê - R$30</option>
+              <option value="Corte e Barba - R$40">Corte e Barba - R$40</option>
+              <option value="Barba - R$20">Barba - R$20</option>
+            </select>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="data">Data</label>
+                <input type="date" id="data" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="hora">Horário</label>
+                <select id="hora" class="form-control" required>
+                  <option value="">Selecione primeiro a data</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-calendar-check"></i> CONFIRMAR AGENDAMENTO
+          </button>
+        </form>
+      </div>
+
+      <!-- Container para as redes sociais -->
+      <div class="card" id="redes-sociais-container">
+        <h3>Nossas Redes Sociais</h3>
+        <div class="icones-redes-sociais">
+          <a href="#" class="icone-rede-social icone-whatsapp"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="icone-rede-social icone-instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="icone-rede-social icone-facebook"><i class="fab fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Área de Administração do Salão -->
+    <div id="salao-admin" class="tab-content">
+      <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUÇÕES TECNOLÓGICAS</div>
+          </div>
+        </div>
+        <h1>Área do Salão</h1>
+        <p>Gerencie seus agendamentos</p>
+      </div>
+      
+      <div class="card">
+        <h2>Login</h2>
+        <form id="login-salao-form">
+          <div class="form-group">
+            <label for="email-salao">E-mail</label>
+            <input type="email" id="email-salao" class="form-control" placeholder="Digite seu e-mail" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="senha-salao">Senha</label>
+            <input type="password" id="senha-salao" class="form-control" placeholder="Digite sua senha" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-sign-in-alt"></i> ENTRAR
+          </button>
+        </form>
+      </div>
+      
+      <div id="salao-dashboard" style="display: none;">
+        <div class="card">
+          <h2>Agendamentos</h2>
+          <div class="form-group">
+            <label for="filtrar-data">Filtrar por data</label>
+            <input type="date" id="filtrar-data" class="form-control">
+          </div>
+          
+          <table id="tabela-agendamentos">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Cliente</th>
+                <th>Serviço</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Os agendamentos serão carregados aqui -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Área de Relatórios -->
+        <div class="card" id="relatorio-container">
+          <h2>Relatório e Faturamento</h2>
+          
+          <div class="form-group">
+            <label>Período:</label>
+            <div class="row">
+              <div class="col-md-6">
+                <input type="date" id="data-inicio" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <input type="date" id="data-fim" class="form-control">
+              </div>
+            </div>
+          </div>
+          
+          <button onclick="gerarRelatorio()" class="btn btn-primary btn-relatorio">
+            <i class="fas fa-chart-bar"></i> Gerar Relatório
+          </button>
+
+          <div class="botoes-exportacao" style="display: none;" id="botoes-exportacao">
+            <button onclick="exportarParaPDF()" class="btn-exportar btn-exportar-pdf">
+              <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button onclick="exportarParaCSV()" class="btn-exportar btn-exportar-csv">
+              <i class="fas fa-file-excel"></i> Exportar CSV
+            </button>
+          </div>
+          
+          <div id="resultado-relatorio"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Área de Administração Master -->
+    <div id="master-admin" class="tab-content">
+      <div class="header">
+        <div class="logo-container">
+          <div class="logo-text">
+            <div class="multi">MULTI</div>
+            <div class="sistemas">SISTEMAS</div>
+            <div class="solucoes">SOLUÇÕES TECNOLÓGICAS</div>
+          </div>
+        </div>
+        <h1>Área Master</h1>
+        <p>Gerencie todos os salões</p>
+      </div>
+      
+      <div class="card">
+        <h2>Login Master</h2>
+        <form id="login-master-form">
+          <div class="form-group">
+            <label for="email-master">E-mail</label>
+            <input type="email" id="email-master" class="form-control" placeholder="Digite seu e-mail" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="senha-master">Senha</label>
+            <input type="password" id="senha-master" class="form-control" placeholder="Digite sua senha" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-sign-in-alt"></i> ENTRAR
+          </button>
+        </form>
+      </div>
+      
+      <div id="master-dashboard" style="display: none;">
+        <div class="card">
+          <h2>Cadastrar Novo Salão</h2>
+          <form id="cadastro-salao-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nome-salao">Nome do Salão</label>
+                  <input type="text" id="nome-salao" class="form-control" placeholder="Digite o nome do salão" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="endereco-salao">Endereço</label>
+                  <input type="text" id="endereco-salao" class="form-control" placeholder="Digite o endereço" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email-salao-cadastro">E-mail</label>
+                  <input type="email" id="email-salao-cadastro" class="form-control" placeholder="Digite o e-mail" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="senha-salao-cadastro">Senha</label>
+                  <input type="password" id="senha-salao-cadastro" class="form-control" placeholder="Digite a senha" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="horario-funcionamento">Horário de Funcionamento</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <select id="abertura" class="form-control" required>
+                    <option value="08:00">08:00</option>
+                    <option value="09:00">09:00</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <select id="fechamento" class="form-control" required>
+                    <option value="18:00">18:00</option>
+                    <option value="19:00">19:00</option>
+                    <option value="20:00">20:00</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Dias de Funcionamento</label>
+              <div class="row">
+                <div class="col-md-12">
+                  <label style="display: inline-block; margin-right: 15px;">
+                    <input type="checkbox" id="domingo" checked> Domingo
+                  </label>
+                  <label style="display: inline-block; margin-right: 15px;">
+                    <input type="checkbox" id="feriados"> Feriados
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group servicos-container">
+              <label>Serviços do Salão</label>
+              <div id="servicos-salao">
+                <!-- Serviços serão adicionados aqui -->
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="adicionarServico()">
+                <i class="fas fa-plus"></i> Adicionar Serviço
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label>Redes Sociais</label>
+              <div id="redes-sociais-salao">
+                <!-- Redes sociais serão adicionadas aqui -->
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="adicionarRedeSocial()">
+                <i class="fas fa-plus"></i> Adicionar Rede Social
+              </button>
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-block">
+              <i class="fas fa-save"></i> CADASTRAR SALÃO
+            </button>
+          </form>
+        </div>
+        
+        <div class="card">
+          <h2>Salões Cadastrados</h2>
+          <table id="tabela-saloes">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Endereço</th>
+                <th>E-mail</th>
+                <th>Horário</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Os salões serão carregados aqui -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Switch para JSON Server -->
+  <div class="api-switch">
+    <label>
+      <input type="checkbox" id="use-api" checked> Usar JSON Server (persistência entre navegadores)
+    </label>
+    <div id="api-status">Modo online (JSONBin.io)</div>
+  </div>
+
+  <script>
+    // ▼▼▼▼▼▼ CONFIGURAÇÃO JSONBIN.IO ▼▼▼▼▼▼
+    const JSONBIN_CONFIG = {
+      BIN_ID: "684efe118960c979a5aa6291",
+      API_KEY: "$2a$10$b8sIOGWlNXkS/KH3i3MwwuEaVUYgKXKtnESKL.R4lCPokrRxLiy8G"
     };
     const API_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_CONFIG.BIN_ID}`;
     let useAPI = true;
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
     
     // Configurações
     let db;
-    
-    // Variáveis globais
     let currentUser = null;
     let agendamentos = [];
     let saloes = [];
 
-    // ▼▼▼▼▼▼ FUNÇÕES DE FORMATAÇÃO DE DATA ATUALIZADAS ▼▼▼▼▼▼
-
-    // Inicializa o IndexedDB
-    function initDB() {
-      return new Promise((resolve) => {
-        const request = indexedDB.open('SalaoAgendamentosDB', 3);
-        
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          if (!db.objectStoreNames.contains('saloes')) {
-            db.createObjectStore('saloes', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('agendamentos')) {
-            db.createObjectStore('agendamentos', { keyPath: 'id' });
-          }
-        };
-        
-        request.onsuccess = (event) => {
-          db = event.target.result;
-          resolve(db);
-        };
-      });
-    }
+    // ▼▼▼▼▼▼ FUNÇÕES DE FORMATAÇÃO DE DATA ▼▼▼▼▼▼
     
-    // Funções para IndexedDB
-    async function salvarDadosIndexedDB(tabela, dados) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readwrite');
-        const store = transaction.objectStore(tabela);
-        
-        const clearRequest = store.clear();
-        
-        clearRequest.onsuccess = () => {
-          if (Array.isArray(dados)) {
-            dados.forEach(item => {
-              store.put(item);
-            });
-          } else {
-            store.put(dados);
-          }
-          resolve();
-        };
-      });
-    }
-    
-    async function carregarDadosIndexedDB(tabela) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readonly');
-        const store = transaction.objectStore(tabela);
-        const request = store.getAll();
-        
-        request.onsuccess = () => {
-          resolve(request.result || []);
-        };
-      });
-    }
-    
-    // ▼▼▼▼▼▼ FUNÇÕES DE API ATUALIZADAS ▼▼▼▼▼▼
-    async function carregarDadosAPI(tabela) {
-      try {
-        const response = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
-        });
-        const fullData = await response.json();
-        return fullData.record[tabela] || [];
-      } catch (error) {
-        console.error("API offline, usando fallback...", error);
-        useAPI = false;
-        return [];
-    // Função para formatar data no padrão brasileiro (dd/mm/aaaa)
     function formatarDataBrasileira(dataString) {
       if (!dataString) return '';
       
-      // Verifica se já está no formato dd/mm/aaaa
       if (dataString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
         return dataString;
       }
-    }
-
-    async function salvarDadosAPI(tabela, dados) {
-      try {
-        const responseGet = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
-        });
-        const dbCompleto = await responseGet.json();
-        
-        dbCompleto.record[tabela] = dados;
-        
-        const responsePut = await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': JSONBIN_CONFIG.API_KEY
-          },
-          body: JSON.stringify(dbCompleto.record)
-        });
-        
-        if (!responsePut.ok) throw new Error("Erro ao salvar");
-      } catch (error) {
-        console.error("JSONBin.io offline - Alternando para modo local", error);
-        useAPI = false;
       
-      // Converte de YYYY-MM-DD para dd/mm/aaaa
       const partes = dataString.split('-');
       if (partes.length === 3) {
         return `${partes[2]}/${partes[1]}/${partes[0]}`;
       }
-    }
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-    // Funções genéricas para salvar/carregar
-    async function salvarDados(tabela, dados) {
-      if (useAPI) {
-        return await salvarDadosAPI(tabela, dados);
-      } else {
-        return await salvarDadosIndexedDB(tabela, dados);
       
-      // Tenta converter de outros formatos com ajuste de fuso horário
       const data = new Date(dataString);
       if (isNaN(data.getTime())) {
-        return dataString; // Retorna original se não puder converter
+        return dataString;
       }
       
-      // Ajusta para o fuso horário local
       const dataAjustada = new Date(data.getTime() + data.getTimezoneOffset() * 60000);
       
       const dia = String(dataAjustada.getDate()).padStart(2, '0');
@@ -200,406 +1030,33 @@ body {
       const ano = dataAjustada.getFullYear();
       return `${dia}/${mes}/${ano}`;
     }
-    
-    async function carregarDados(tabela) {
-      if (useAPI) {
-        return await carregarDadosAPI(tabela);
-      } else {
-        return await carregarDadosIndexedDB(tabela);
 
-    // Função simplificada para formatar data (usada no relatório)
     function formatarDataSimples(dataString) {
       if (!dataString) return '';
       
-      // Se já estiver no formato dd/mm/aaaa, retorna diretamente
       if (dataString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
         return dataString;
       }
-    }
-    
-    // Função para alternar entre as abas
-    function openTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      // Se estiver no formato YYYY-MM-DD, converte para dd/mm/aaaa
+      
       if (dataString.match(/^\d{4}-\d{2}-\d{2}$/)) {
         const [ano, mes, dia] = dataString.split('-');
         return `${dia}/${mes}/${ano}`;
       }
-
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
-    
-    // Função para formatar a data
-    function formatarData(data) {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(data).toLocaleDateString('pt-BR', options);
-    }
-    
-    // Função para gerar horários disponíveis
-    function gerarHorariosDisponiveis(abertura = '08:00', fechamento = '20:00', intervalo = 30, agendamentosDoDia = []) {
-      const selectHora = document.getElementById('hora');
-      selectHora.innerHTML = '<option value="">Selecione o horário</option>';
-      // Para outros formatos, usa o objeto Date com ajuste de fuso horário
+      
       const data = new Date(dataString);
       if (isNaN(data.getTime())) return dataString;
-
-      const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
-      const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
-      // Ajusta para o fuso horário local
+      
       const dataAjustada = new Date(data.getTime() + data.getTimezoneOffset() * 60000);
-
-      const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
-      const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
+      
       const dia = String(dataAjustada.getDate()).padStart(2, '0');
       const mes = String(dataAjustada.getMonth() + 1).padStart(2, '0');
       const ano = dataAjustada.getFullYear();
-
-      for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
-        const hora = Math.floor(minutos / 60);
-        const minuto = minutos % 60;
-        const horaFormatada = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
-        
-        const option = document.createElement('option');
-        option.value = horaFormatada;
-        option.textContent = horaFormatada;
-        
-        const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
-        
-        if (horarioOcupado) {
-          option.disabled = true;
-          option.classList.add('horario-ocupado');
-          option.textContent += ' (Ocupado)';
-        } else {
-          option.classList.add('horario-disponivel');
-        }
-        
-        selectHora.appendChild(option);
-      }
+      
       return `${dia}/${mes}/${ano}`;
     }
+
+    // ▼▼▼▼▼▼ FUNÇÕES PRINCIPAIS ▼▼▼▼▼▼
     
-    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: getSalaoIdFromUrl ▼▼▼▼▼▼
-    async function getSalaoIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const salaoParam = urlParams.get('salao');
-      if (!salaoParam) return null;
-
-      try {
-        const response = await fetch(`${API_URL}/latest`, {
-          headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
-        });
-        const { record } = await response.json();
-        const salao = record.saloes.find(s => 
-          s.urlPersonalizada === salaoParam || s.id === salaoParam
-        );
-        return salao ? salao.id : null;
-      } catch (error) {
-        console.log("Usando dados locais (API offline)", error);
-        return saloes.find(s => 
-          s.urlPersonalizada === salaoParam || s.id === salaoParam
-        )?.id;
-    // Função para verificar e corrigir agendamentos com data fixa
-    async function verificarAgendamentos() {
-      const hoje = new Date().toISOString().split('T')[0];
-      let agendamentosCorrigidos = false;
-      
-      agendamentos.forEach(ag => {
-        // Verifica se a data está no formato problemático (14/07/2025)
-        if (ag.data === '2025-07-14' || ag.data.includes('14/07/2025')) {
-          console.warn(`Agendamento com data fixa encontrado: ${ag.id}`);
-          // Substitui pela data atual (ou outra lógica de correção)
-          ag.data = hoje;
-          agendamentosCorrigidos = true;
-        }
-      });
-      
-      if (agendamentosCorrigidos) {
-        await salvarDados('agendamentos', agendamentos);
-      }
-    }
-
-    // Função para carregar horários disponíveis
-    async function carregarHorariosDisponiveis(data) {
-      const dateObj = new Date(data);
-      const salaoId = await getSalaoIdFromUrl();
-      const salao = saloes.find(s => s.id === salaoId);
-      
-      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
-        return;
-      }
-    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: carregarAgendamentosSalao ▼▼▼▼▼▼
-    async function carregarAgendamentosSalao(salaoId) {
-      const tbody = document.querySelector('#tabela-agendamentos tbody');
-      tbody.innerHTML = '';
-
-      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
-        return;
-      }
-      // Filtra e ordena os agendamentos
-      const agendamentosDoSalão = agendamentos
-        .filter(ag => ag.salaoId === salaoId)
-        .sort((a, b) => {
-          const dataA = new Date(`${a.data}T${a.hora}`);
-          const dataB = new Date(`${b.data}T${b.hora}`);
-          return dataA - dataB;
-        });
-
-      const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
-      const abertura = salao ? salao.abertura : '08:00';
-      const fechamento = salao ? salao.fechamento : '20:00';
-      // Filtra por data se houver filtro aplicado
-      const filtroData = document.getElementById('filtrar-data').value;
-      const agendamentosFiltrados = filtroData 
-        ? agendamentosDoSalão.filter(ag => ag.data === filtroData)
-        : agendamentosDoSalão;
-
-      gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
-      // Preenche a tabela com os agendamentos
-      agendamentosFiltrados.forEach(ag => {
-        const tr = document.createElement('tr');
-        
-        // Extrai o nome do serviço e valor (se existir)
-        const servicoParts = ag.servico.split('-');
-        const nomeServico = servicoParts[0].trim();
-        const valorServico = servicoParts.length > 1 ? `- ${servicoParts[1].trim()}` : '';
-        
-        tr.innerHTML = `
-          <td>${formatarDataBrasileira(ag.data)}</td>
-          <td>${ag.hora}</td>
-          <td>${ag.nome}</td>
-          <td>${nomeServico} ${valorServico}</td>
-          <td>${ag.telefone}</td>
-          <td>
-            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
-              <i class="fas fa-times"></i> Cancelar
-            </button>
-          </td>
-        `;
-        
-        tbody.appendChild(tr);
-      });
-    }
-    
-    // Máscara para telefone
-    document.getElementById('telefone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-      e.target.value = value;
-    });
-    
-    // Validação do formulário de agendamento
-
-    // ▼▼▼▼▼▼ FUNÇÃO ATUALIZADA: Evento de submit do formulário ▼▼▼▼▼▼
-    document.getElementById('agendamento-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-@@ -1250,12 +1145,20 @@ <h2>Salões Cadastrados</h2>
-        return;
-      }
-
-      // Garante que a data está no formato correto (YYYY-MM-DD)
-      const dataObj = new Date(data);
-      if (isNaN(dataObj.getTime())) {
-        alert('Data inválida. Por favor, selecione novamente.');
-        return;
-      }
-      const dataISO = dataObj.toISOString().split('T')[0];
-      
-      const novoAgendamento = {
-        id: Date.now().toString(),
-        nome,
-        telefone,
-        servico,
-        data,
-        data: dataISO, // Usa a data formatada corretamente
-        hora,
-        status: 'confirmado',
-        dataCriacao: new Date().toISOString(),
-@@ -1265,15 +1168,133 @@ <h2>Salões Cadastrados</h2>
-      agendamentos.push(novoAgendamento);
-      await salvarDados('agendamentos', agendamentos);
-
-      alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarData(data)}\nHorário: ${hora}`);
-      alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarDataBrasileira(dataISO)}\nHorário: ${hora}`);
-
-      document.getElementById("agendamento-form").reset();
-      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
-    });
-    
-    // ===== FUNÇÕES DE RELATÓRIO ===== //
-    function formatarMoeda(valor) {
-      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-    // ▼▼▼▼▼▼ ATUALIZAÇÃO: Inicialização do sistema ▼▼▼▼▼▼
-    window.addEventListener('load', async () => {
-      // 1. Carrega dados DA API primeiro
-      try {
-        const [apiSaloes, apiAgendamentos] = await Promise.all([
-          carregarDadosAPI('saloes'),
-          carregarDadosAPI('agendamentos')
-        ]);
-        saloes = apiSaloes;
-        agendamentos = apiAgendamentos;
-      } catch {
-        saloes = await carregarDadosIndexedDB('saloes');
-        agendamentos = await carregarDadosIndexedDB('agendamentos');
-      }
-
-      // 2. Verifica e corrige agendamentos com data fixa
-      await verificarAgendamentos();
-
-      // 3. Processa parâmetro da URL
-      const salaoId = await getSalaoIdFromUrl();
-      if (salaoId) {
-        const salao = saloes.find(s => s.id === salaoId);
-        if (salao) {
-          document.getElementById('salao-nome').textContent = salao.nome;
-          carregarServicosSalao(salaoId);
-          if (!window.location.href.includes(salao.urlPersonalizada)) {
-            history.replaceState({}, '', `?salao=${salao.urlPersonalizada || salaoId}`);
-          }
-        }
-      }
-
-      // Inicializa o IndexedDB como fallback
-      await initDB();
-      
-      // Configura a data mínima como hoje
-      const hoje = new Date();
-      document.getElementById('data').min = hoje.toISOString().split('T')[0];
-      
-      // Configura a data máxima para 3 meses à frente
-      const tresMesesAFrente = new Date();
-      tresMesesAFrente.setMonth(tresMesesAFrente.getMonth() + 3);
-      document.getElementById('data').max = tresMesesAFrente.toISOString().split('T')[0];
-      
-      // Inicializa o campo de horário
-      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
-      
-      // Listener para mudança de data
-      document.getElementById('data').addEventListener('change', function() {
-        const selectedDate = this.value;
-        if (selectedDate) {
-          carregarHorariosDisponiveis(selectedDate);
-        }
-      });
-      
-      // Dados de exemplo atualizados (sem datas fixas)
-      if (saloes.length === 0) {
-        saloes = [
-          {
-            id: '1',
-            nome: 'Alicon Cortes - Matriz',
-            endereco: 'Rua Principal, 123 - Centro',
-            email: 'matriz@aliconcortes.com',
-            senha: '123456',
-            horario: '08:00 - 20:00',
-            abertura: '08:00',
-            fechamento: '20:00',
-            funcionaDomingo: true,
-            funcionaFeriado: false,
-            servicos: [
-              { nome: 'Corte Simples', valor: 'R$ 25,00' },
-              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
-              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
-              { nome: 'Barba', valor: 'R$ 20,00' }
-            ],
-            redesSociais: [
-              { tipo: 'facebook', url: 'https://facebook.com/aliconcortes' },
-              { tipo: 'instagram', url: 'https://instagram.com/aliconcortes' },
-              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' }
-            ],
-            dataCriacao: new Date().toISOString(),
-            urlPersonalizada: 'alicon-cortes-matriz'
-          }
-        ];
-        await salvarDados('saloes', saloes);
-      }
-      
-      if (agendamentos.length === 0) {
-        const hoje = new Date().toISOString().split('T')[0];
-        const amanha = new Date(Date.now() + 86400000).toISOString().split('T')[0];
-        
-        agendamentos = [
-          {
-            id: '1',
-            nome: 'João Silva',
-            telefone: '(11) 98765-4321',
-            servico: 'Corte e Barba - R$40',
-            data: hoje, // Usa a data atual
-            hora: '10:00',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          },
-          {
-            id: '2',
-            nome: 'Maria Souza',
-            telefone: '(11) 91234-5678',
-            servico: 'Corte Degradê - R$30',
-            data: amanha, // Usa a data de amanhã
-            hora: '14:30',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          }
-        ];
-        await salvarDados('agendamentos', agendamentos);
-      }
-    });
-
-    // ===== FUNÇÕES PARA RELATÓRIO ===== //
-    function formatarMoeda(valor) {
-      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    function extrairValorServico(servico) {
-@@ -1284,11 +1305,6 @@ <h2>Salões Cadastrados</h2>
-      return 0;
-    }
-
-    function formatarDataSimples(dataString) {
-      const data = new Date(dataString);
-      return data.toLocaleDateString('pt-BR');
-    }
-
-    async function gerarRelatorio() {
-      const dataInicio = document.getElementById('data-inicio').value;
-      const dataFim = document.getElementById('data-fim').value;
-@@ -1396,14 +1412,16 @@ <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${ag
-        <tbody>
-      `;
-
-      // Adiciona os agendamentos
-      // Adiciona os agendamentos com data formatada corretamente
-      agendamentosFiltrados
-        .sort((a, b) => new Date(b.data) - new Date(a.data))
-        .slice(0, 10)
-        .forEach(ag => {
-          const dataFormatada = formatarDataBrasileira(ag.data);
-          
-          html += `
-            <tr>
-              <td>${formatarDataSimples(ag.data)}</td>
-              <td>${dataFormatada}</td>
-              <td>${ag.nome}</td>
-              <td>${ag.telefone}</td>
-              <td>${ag.servico.split('-')[0].trim()}</td>
-@@ -1521,7 +1539,196 @@ <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${ag
-      link.click();
-      document.body.removeChild(link);
-    }
-    // Funções para IndexedDB
     async function initDB() {
       return new Promise((resolve) => {
         const request = indexedDB.open('SalaoAgendamentosDB', 3);
@@ -621,39 +1078,242 @@ body {
       });
     }
     
-    async function salvarDadosIndexedDB(tabela, dados) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readwrite');
-        const store = transaction.objectStore(tabela);
+    async function carregarAgendamentosSalao(salaoId) {
+      const tbody = document.querySelector('#tabela-agendamentos tbody');
+      tbody.innerHTML = '';
+      
+      const agendamentosDoSalão = agendamentos
+        .filter(ag => ag.salaoId === salaoId)
+        .sort((a, b) => {
+          const dataA = new Date(`${a.data}T${a.hora}`);
+          const dataB = new Date(`${b.data}T${b.hora}`);
+          return dataA - dataB;
+        });
+      
+      const filtroData = document.getElementById('filtrar-data').value;
+      const agendamentosFiltrados = filtroData 
+        ? agendamentosDoSalão.filter(ag => ag.data === filtroData)
+        : agendamentosDoSalão;
+      
+      agendamentosFiltrados.forEach(ag => {
+        const tr = document.createElement('tr');
+        const servicoParts = ag.servico.split('-');
+        const nomeServico = servicoParts[0].trim();
+        const valorServico = servicoParts.length > 1 ? `- ${servicoParts[1].trim()}` : '';
         
-        const clearRequest = store.clear();
+        tr.innerHTML = `
+          <td>${formatarDataBrasileira(ag.data)}</td>
+          <td>${ag.hora}</td>
+          <td>${ag.nome}</td>
+          <td>${nomeServico} ${valorServico}</td>
+          <td>${ag.telefone}</td>
+          <td>
+            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </td>
+        `;
         
-        clearRequest.onsuccess = () => {
-          if (Array.isArray(dados)) {
-            dados.forEach(item => {
-              store.put(item);
-            });
-          } else {
-            store.put(dados);
-          }
-          resolve();
-        };
-      });
-    }
-    
-    async function carregarDadosIndexedDB(tabela) {
-      return new Promise((resolve) => {
-        const transaction = db.transaction(tabela, 'readonly');
-        const store = transaction.objectStore(tabela);
-        const request = store.getAll();
-        
-        request.onsuccess = () => {
-          resolve(request.result || []);
-        };
+        tbody.appendChild(tr);
       });
     }
 
-    // Funções para API
+    document.getElementById('agendamento-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const nome = document.getElementById("nome").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const servico = document.getElementById("servico").value;
+      const data = document.getElementById("data").value;
+      const hora = document.getElementById("hora").value;
+      const salaoId = await getSalaoIdFromUrl();
+      
+      if (!nome || !telefone || !servico || !data || !hora) {
+        alert('Preencha todos os campos obrigatórios');
+        return;
+      }
+      
+      if (document.querySelector('#hora option:checked').disabled) {
+        alert('Este horário já está ocupado. Por favor, selecione outro.');
+        return;
+      }
+      
+      const dataObj = new Date(data);
+      if (isNaN(dataObj.getTime())) {
+        alert('Data inválida. Por favor, selecione novamente.');
+        return;
+      }
+      const dataISO = dataObj.toISOString().split('T')[0];
+      
+      const novoAgendamento = {
+        id: Date.now().toString(),
+        nome,
+        telefone,
+        servico,
+        data: dataISO,
+        hora,
+        status: 'confirmado',
+        dataCriacao: new Date().toISOString(),
+        salaoId: salaoId || 'default'
+      };
+      
+      agendamentos.push(novoAgendamento);
+      await salvarDados('agendamentos', agendamentos);
+      
+      alert(`Agendamento confirmado!\n\nNome: ${nome}\nTelefone: ${telefone}\nServiço: ${servico}\nData: ${formatarDataBrasileira(dataISO)}\nHorário: ${hora}`);
+      
+      document.getElementById("agendamento-form").reset();
+      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
+    });
+
+    // ▼▼▼▼▼▼ INICIALIZAÇÃO DO SISTEMA ▼▼▼▼▼▼
+    window.addEventListener('load', async () => {
+      try {
+        const [apiSaloes, apiAgendamentos] = await Promise.all([
+          carregarDadosAPI('saloes'),
+          carregarDadosAPI('agendamentos')
+        ]);
+        saloes = apiSaloes;
+        agendamentos = apiAgendamentos;
+      } catch {
+        saloes = await carregarDadosIndexedDB('saloes');
+        agendamentos = await carregarDadosIndexedDB('agendamentos');
+      }
+
+      await initDB();
+      
+      const hoje = new Date();
+      document.getElementById('data').min = hoje.toISOString().split('T')[0];
+      
+      const tresMesesAFrente = new Date();
+      tresMesesAFrente.setMonth(tresMesesAFrente.getMonth() + 3);
+      document.getElementById('data').max = tresMesesAFrente.toISOString().split('T')[0];
+      
+      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
+      
+      document.getElementById('data').addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+          carregarHorariosDisponiveis(selectedDate);
+        }
+      });
+      
+      if (saloes.length === 0) {
+        saloes = [
+          {
+            id: '1',
+            nome: 'Barbearia Moderna',
+            endereco: 'Rua Principal, 123 - Centro',
+            email: 'contato@barbeariamoderna.com',
+            senha: '123456',
+            horario: '08:00 - 20:00',
+            abertura: '08:00',
+            fechamento: '20:00',
+            funcionaDomingo: false,
+            funcionaFeriado: false,
+            servicos: [
+              { nome: 'Corte Simples', valor: 'R$ 25,00' },
+              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
+              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
+              { nome: 'Barba', valor: 'R$ 20,00' }
+            ],
+            redesSociais: [
+              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' },
+              { tipo: 'instagram', url: 'https://instagram.com/barbeariamoderna' }
+            ],
+            urlPersonalizada: 'barbearia-moderna'
+          }
+        ];
+        await salvarDados('saloes', saloes);
+      }
+      
+      const salaoId = await getSalaoIdFromUrl();
+      if (salaoId) {
+        const salao = saloes.find(s => s.id === salaoId);
+        if (salao) {
+          document.getElementById('salao-nome').textContent = salao.nome;
+          carregarServicosSalao(salaoId);
+        }
+      }
+    });
+
+    // ▼▼▼▼▼▼ FUNÇÕES AUXILIARES ▼▼▼▼▼▼
+    function openTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+    
+    function gerarHorariosDisponiveis(abertura = '08:00', fechamento = '20:00', intervalo = 30, agendamentosDoDia = []) {
+      const selectHora = document.getElementById('hora');
+      selectHora.innerHTML = '<option value="">Selecione o horário</option>';
+      
+      const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
+      const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
+      
+      const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
+      const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
+      
+      for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
+        const hora = Math.floor(minutos / 60);
+        const minuto = minutos % 60;
+        const horaFormatada = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
+        
+        const option = document.createElement('option');
+        option.value = horaFormatada;
+        option.textContent = horaFormatada;
+        
+        const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
+        
+        if (horarioOcupado) {
+          option.disabled = true;
+          option.classList.add('horario-ocupado');
+          option.textContent += ' (Ocupado)';
+        } else {
+          option.classList.add('horario-disponivel');
+        }
+        
+        selectHora.appendChild(option);
+      }
+    }
+    
+    async function carregarHorariosDisponiveis(data) {
+      const dateObj = new Date(data);
+      const salaoId = await getSalaoIdFromUrl();
+      const salao = saloes.find(s => s.id === salaoId);
+      
+      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
+        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
+        return;
+      }
+      
+      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
+        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
+        return;
+      }
+      
+      const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
+      const abertura = salao ? salao.abertura : '08:00';
+      const fechamento = salao ? salao.fechamento : '20:00';
+      
+      gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
+    }
+    
+    document.getElementById('telefone').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+      e.target.value = value;
+    });
+
+    // ▼▼▼▼▼▼ FUNÇÕES DE PERSISTÊNCIA ▼▼▼▼▼▼
     async function carregarDadosAPI(tabela) {
       try {
         const response = await fetch(`${API_URL}/latest`, {
@@ -693,7 +1353,38 @@ body {
       }
     }
 
-    // Funções genéricas para salvar/carregar
+    async function salvarDadosIndexedDB(tabela, dados) {
+      return new Promise((resolve) => {
+        const transaction = db.transaction(tabela, 'readwrite');
+        const store = transaction.objectStore(tabela);
+        
+        const clearRequest = store.clear();
+        
+        clearRequest.onsuccess = () => {
+          if (Array.isArray(dados)) {
+            dados.forEach(item => {
+              store.put(item);
+            });
+          } else {
+            store.put(dados);
+          }
+          resolve();
+        };
+      });
+    }
+    
+    async function carregarDadosIndexedDB(tabela) {
+      return new Promise((resolve) => {
+        const transaction = db.transaction(tabela, 'readonly');
+        const store = transaction.objectStore(tabela);
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+          resolve(request.result || []);
+        };
+      });
+    }
+
     async function salvarDados(tabela, dados) {
       if (useAPI) {
         return await salvarDadosAPI(tabela, dados);
@@ -710,127 +1401,147 @@ body {
       }
     }
 
-    // Função para alternar entre as abas
-    function openTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
+    // ▼▼▼▼▼▼ FUNÇÕES DO SALÃO ▼▼▼▼▼▼
+    function carregarServicosSalao(salaoId) {
+      const selectServico = document.getElementById('servico');
+      selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
       
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
-    
-    // Função para gerar horários disponíveis
-    function gerarHorariosDisponiveis(abertura = '08:00', fechamento = '20:00', intervalo = 30, agendamentosDoDia = []) {
-      const selectHora = document.getElementById('hora');
-      selectHora.innerHTML = '<option value="">Selecione o horário</option>';
-      
-      const [aberturaHora, aberturaMinuto] = abertura.split(':').map(Number);
-      const [fechamentoHora, fechamentoMinuto] = fechamento.split(':').map(Number);
-      
-      const inicioMinutos = aberturaHora * 60 + aberturaMinuto;
-      const fimMinutos = fechamentoHora * 60 + fechamentoMinuto;
-      
-      for (let minutos = inicioMinutos; minutos < fimMinutos; minutos += intervalo) {
-        const hora = Math.floor(minutos / 60);
-        const minuto = minutos % 60;
-        const horaFormatada = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
-        
-        const option = document.createElement('option');
-        option.value = horaFormatada;
-        option.textContent = horaFormatada;
-        
-        const horarioOcupado = agendamentosDoDia.some(ag => ag.hora === horaFormatada && ag.data === document.getElementById('data').value);
-        
-        if (horarioOcupado) {
-          option.disabled = true;
-          option.classList.add('horario-ocupado');
-          option.textContent += ' (Ocupado)';
-        } else {
-          option.classList.add('horario-disponivel');
-        }
-        
-        selectHora.appendChild(option);
-      }
-    }
-    
-    // Função para carregar horários disponíveis
-    async function carregarHorariosDisponiveis(data) {
-      const dateObj = new Date(data);
-      const salaoId = await getSalaoIdFromUrl();
       const salao = saloes.find(s => s.id === salaoId);
       
-      if (dateObj.getDay() === 0 && !salao?.funcionaDomingo) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado aos domingos</option>';
-        return;
+      if (salao?.servicos?.length > 0) {
+        salao.servicos.forEach(servico => {
+          const option = document.createElement('option');
+          option.value = `${servico.nome} - ${servico.valor}`;
+          option.textContent = `${servico.nome} - ${servico.valor}`;
+          selectServico.appendChild(option);
+        });
       }
-      
-      if (salao?.verificarFeriado && !salao?.funcionaFeriado) {
-        document.getElementById('hora').innerHTML = '<option value="" disabled>Fechado em feriados</option>';
-        return;
-      }
-      
-      const agendamentosDoDia = agendamentos.filter(ag => ag.data === data && ag.salaoId === salaoId);
-      const abertura = salao ? salao.abertura : '08:00';
-      const fechamento = salao ? salao.fechamento : '20:00';
-      
-      gerarHorariosDisponiveis(abertura, fechamento, 30, agendamentosDoDia);
-    }
-    
-    // Máscara para telefone
-    document.getElementById('telefone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-      value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-      e.target.value = value;
-    });
-    
-    function carregarScript(url) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-@@ -1810,48 +2017,6 @@ <h3>Últimos Agendamentos (${Math.min(agendamentosFiltrados.length, 10)} de ${ag
-      alert('Link copiado para a área de transferência!');
     }
 
-    // Função para carregar agendamentos do salão
-    async function carregarAgendamentosSalao(salaoId) {
-      const tbody = document.querySelector('#tabela-agendamentos tbody');
+    async function cancelarAgendamento(id) {
+      if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+        agendamentos = agendamentos.filter(ag => ag.id !== id);
+        await salvarDados('agendamentos', agendamentos);
+        await carregarAgendamentosSalao(currentUser.salaoId);
+        alert('Agendamento cancelado com sucesso!');
+      }
+    }
+
+    // ▼▼▼▼▼▼ FUNÇÕES DE LOGIN ▼▼▼▼▼▼
+    document.getElementById('login-salao-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email-salao').value;
+      const senha = document.getElementById('senha-salao').value;
+      
+      const salao = saloes.find(s => s.email === email && s.senha === senha);
+      
+      if (salao) {
+        currentUser = { email, role: 'salao', salaoId: salao.id };
+        document.getElementById('login-salao-form').style.display = 'none';
+        document.getElementById('salao-dashboard').style.display = 'block';
+        
+        const hoje = new Date();
+        const trintaDiasAtras = new Date();
+        trintaDiasAtras.setDate(hoje.getDate() - 30);
+        
+        document.getElementById('data-inicio').value = trintaDiasAtras.toISOString().split('T')[0];
+        document.getElementById('data-fim').value = hoje.toISOString().split('T')[0];
+        
+        await carregarAgendamentosSalao(salao.id);
+      } else {
+        alert('E-mail ou senha incorretos');
+      }
+    });
+    
+    document.getElementById('login-master-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email-master').value;
+      const senha = document.getElementById('senha-master').value;
+      
+      if (email === 'admin@example.com' && senha === 'admin123') {
+        currentUser = { email, role: 'master' };
+        document.getElementById('login-master-form').style.display = 'none';
+        document.getElementById('master-dashboard').style.display = 'block';
+        await carregarSaloes();
+      } else {
+        alert('E-mail ou senha incorretos');
+      }
+    });
+
+    // ▼▼▼▼▼▼ FUNÇÕES MASTER ▼▼▼▼▼▼
+    function adicionarServico(nome = '', valor = '') {
+      const container = document.getElementById('servicos-salao');
+      const div = document.createElement('div');
+      div.className = 'servico-item';
+      
+      div.innerHTML = `
+        <input type="text" class="form-control servico-nome" placeholder="Nome do serviço" value="${nome}">
+        <input type="text" class="form-control servico-valor" placeholder="Valor (ex: R$ 30,00)" value="${valor}">
+        <button type="button" class="btn btn-danger" onclick="removerServico(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      
+      container.appendChild(div);
+    }
+    
+    function removerServico(btn) {
+      btn.parentElement.remove();
+    }
+    
+    function adicionarRedeSocial(tipo = '', url = '') {
+      const container = document.getElementById('redes-sociais-salao');
+      const div = document.createElement('div');
+      div.className = 'rede-social-item';
+      
+      div.innerHTML = `
+        <select class="form-control rede-social-tipo">
+          <option value="">Selecione...</option>
+          <option value="whatsapp" ${tipo === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+          <option value="facebook" ${tipo === 'facebook' ? 'selected' : ''}>Facebook</option>
+          <option value="instagram" ${tipo === 'instagram' ? 'selected' : ''}>Instagram</option>
+        </select>
+        <input type="text" class="form-control rede-social-url" placeholder="URL" value="${url}">
+        <button type="button" class="btn btn-danger" onclick="removerRedeSocial(this)">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      
+      container.appendChild(div);
+    }
+    
+    function removerRedeSocial(btn) {
+      btn.parentElement.remove();
+    }
+    
+    async function carregarSaloes() {
+      const tbody = document.querySelector('#tabela-saloes tbody');
       tbody.innerHTML = '';
       
-      // Filtra agendamentos pelo salão
-      let agendamentosDoSalão = agendamentos.filter(ag => ag.salaoId === salaoId);
-      
-      // Ordena os agendamentos por data e hora
-      const agendamentosOrdenados = agendamentosDoSalão.sort((a, b) => {
-        const dataA = new Date(`${a.data} ${a.hora}`);
-        const dataB = new Date(`${b.data} ${b.hora}`);
-        return dataA - dataB;
-      });
-      
-      // Filtra por data se houver filtro aplicado
-      const filtroData = document.getElementById('filtrar-data').value;
-      const agendamentosFiltrados = filtroData 
-        ? agendamentosOrdenados.filter(ag => ag.data === filtroData)
-        : agendamentosOrdenados;
-      
-      // Preenche a tabela
-      agendamentosFiltrados.forEach(ag => {
+      saloes.forEach(salao => {
         const tr = document.createElement('tr');
+        const linkSalão = gerarLinkSalão(salao.id);
         
         tr.innerHTML = `
-          <td>${formatarData(ag.data)}</td>
-          <td>${ag.hora}</td>
-          <td>${ag.nome}</td>
-          <td>${ag.servico}</td>
-          <td>${ag.telefone}</td>
+          <td>${salao.nome}</td>
+          <td>${salao.endereco}</td>
+          <td>${salao.email}</td>
+          <td>${salao.horario}</td>
           <td>
-            <button onclick="cancelarAgendamento('${ag.id}')" class="btn btn-danger btn-sm">
-              <i class="fas fa-times"></i> Cancelar
+            <button onclick="editarSalao('${salao.id}')" class="btn btn-secondary btn-sm">
+              <i class="fas fa-edit"></i> Editar
             </button>
+            <button onclick="excluirSalao('${salao.id}')" class="btn btn-danger btn-sm">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
+            <div class="salao-link">
+              Link: ${linkSalão}
+              <span class="copy-link" onclick="copiarParaAreaTransferencia('${linkSalão}')">
+                <i class="fas fa-copy"></i> Copiar
+              </span>
+            </div>
           </td>
         `;
         
@@ -838,149 +1549,36 @@ body {
       });
     }
     
-    // Função para carregar salões
-    async function carregarSaloes() {
-      const tbody = document.querySelector('#tabela-saloes tbody');
-@@ -2204,139 +2369,30 @@ <h2>Editar Salão: ${salao.nome}</h2>
-      }
-    });
-
-    // Inicialização do sistema
-    window.addEventListener('load', async () => {
-      // 1. Carrega dados DA API primeiro
-      try {
-        const [apiSaloes, apiAgendamentos] = await Promise.all([
-          carregarDadosAPI('saloes'),
-          carregarDadosAPI('agendamentos')
-        ]);
-        saloes = apiSaloes;
-        agendamentos = apiAgendamentos;
-      } catch {
-        saloes = await carregarDadosIndexedDB('saloes');
-        agendamentos = await carregarDadosIndexedDB('agendamentos');
-      }
-
-      // 2. Processa parâmetro da URL
-      const salaoId = await getSalaoIdFromUrl();
-      if (salaoId) {
-        const salao = saloes.find(s => s.id === salaoId);
-        if (salao) {
-          document.getElementById('salao-nome').textContent = salao.nome;
-          carregarServicosSalao(salaoId);
-          if (!window.location.href.includes(salao.urlPersonalizada)) {
-            history.replaceState({}, '', `?salao=${salao.urlPersonalizada || salaoId}`);
-          }
-        }
-      }
-    // Função para obter ID do salão da URL
+    function gerarUrlPersonalizada(nome) {
+      return nome.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .substring(0, 50);
+    }
+    
+    function gerarLinkSalão(salaoId) {
+      const salao = saloes.find(s => s.id === salaoId);
+      if (!salao) return '#';
+      const baseUrl = window.location.origin + window.location.pathname;
+      return `${baseUrl}?salao=${salao.urlPersonalizada || salaoId}`;
+    }
+    
+    function copiarParaAreaTransferencia(texto) {
+      const textarea = document.createElement('textarea');
+      textarea.value = texto;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      alert('Link copiado para a área de transferência!');
+    }
+    
     async function getSalaoIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       const salaoParam = urlParams.get('salao');
       if (!salaoParam) return null;
 
-      // Inicializa o IndexedDB como fallback
-      await initDB();
-      
-      // Configura a data mínima como hoje
-      const hoje = new Date();
-      document.getElementById('data').min = hoje.toISOString().split('T')[0];
-      
-      // Configura a data máxima para 3 meses à frente
-      const tresMesesAFrente = new Date();
-      tresMesesAFrente.setMonth(tresMesesAFrente.getMonth() + 3);
-      document.getElementById('data').max = tresMesesAFrente.toISOString().split('T')[0];
-      
-      // Inicializa o campo de horário
-      document.getElementById('hora').innerHTML = '<option value="">Selecione primeiro a data</option>';
-      
-      // Listener para mudança de data
-      document.getElementById('data').addEventListener('change', function() {
-        const selectedDate = this.value;
-        if (selectedDate) {
-          carregarHorariosDisponiveis(selectedDate);
-        }
-      });
-      
-      // Dados de exemplo (apenas para primeira execução)
-      if (saloes.length === 0) {
-        saloes = [
-          {
-            id: '1',
-            nome: 'Alicon Cortes - Matriz',
-            endereco: 'Rua Principal, 123 - Centro',
-            email: 'matriz@aliconcortes.com',
-            senha: '123456',
-            horario: '08:00 - 20:00',
-            abertura: '08:00',
-            fechamento: '20:00',
-            funcionaDomingo: true,
-            funcionaFeriado: false,
-            servicos: [
-              { nome: 'Corte Simples', valor: 'R$ 25,00' },
-              { nome: 'Corte Degradê', valor: 'R$ 30,00' },
-              { nome: 'Corte e Barba', valor: 'R$ 40,00' },
-              { nome: 'Barba', valor: 'R$ 20,00' }
-            ],
-            redesSociais: [
-              { tipo: 'facebook', url: 'https://facebook.com/aliconcortes' },
-              { tipo: 'instagram', url: 'https://instagram.com/aliconcortes' },
-              { tipo: 'whatsapp', url: 'https://wa.me/5511999999999' }
-            ],
-            dataCriacao: new Date().toISOString(),
-            urlPersonalizada: 'alicon-cortes-matriz'
-          },
-          {
-            id: '2',
-            nome: 'Alicon Cortes - Filial',
-            endereco: 'Avenida Secundária, 456 - Bairro',
-            email: 'filial@aliconcortes.com',
-            senha: '123456',
-            horario: '09:00 - 19:00',
-            abertura: '09:00',
-            fechamento: '19:00',
-            funcionaDomingo: false,
-            funcionaFeriado: false,
-            servicos: [
-              { nome: 'Corte Simples', valor: 'R$ 20,00' },
-              { nome: 'Corte Degradê', valor: 'R$ 25,00' },
-              { nome: 'Sobrancelha', valor: 'R$ 15,00' }
-            ],
-            redesSociais: [
-              { tipo: 'instagram', url: 'https://instagram.com/aliconfilial' }
-            ],
-            dataCriacao: new Date().toISOString(),
-            urlPersonalizada: 'alicon-cortes-filial'
-          }
-        ];
-        await salvarDados('saloes', saloes);
-      }
-      
-      if (agendamentos.length === 0) {
-        agendamentos = [
-          {
-            id: '1',
-            nome: 'João Silva',
-            telefone: '(11) 98765-4321',
-            servico: 'Corte e Barba - R$40',
-            data: new Date().toISOString().split('T')[0],
-            hora: '10:00',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          },
-          {
-            id: '2',
-            nome: 'Maria Souza',
-            telefone: '(11) 91234-5678',
-            servico: 'Corte Degradê - R$30',
-            data: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Amanhã
-            hora: '14:30',
-            status: 'confirmado',
-            dataCriacao: new Date().toISOString(),
-            salaoId: '1'
-          }
-        ];
-        await salvarDados('agendamentos', agendamentos);
       try {
         const response = await fetch(`${API_URL}/latest`, {
           headers: { 'X-Master-Key': JSONBIN_CONFIG.API_KEY }
@@ -996,8 +1594,260 @@ body {
           s.urlPersonalizada === salaoParam || s.id === salaoParam
         )?.id;
       }
-    });
     }
+
+    // ▼▼▼▼▼▼ FUNÇÕES DE RELATÓRIO ▼▼▼▼▼▼
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function extrairValorServico(servico) {
+      const match = servico.match(/R\$\s*([\d,.]+)/);
+      if (match) {
+        return parseFloat(match[1].replace('.', '').replace(',', '.'));
+      }
+      return 0;
+    }
+
+    async function gerarRelatorio() {
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salaoId = currentUser.salaoId;
+
+      if (!dataInicio || !dataFim) {
+        alert("Selecione o período para gerar o relatório");
+        return;
+      }
+
+      const agendamentosFiltrados = agendamentos.filter(ag => {
+        return (
+          ag.salaoId === salaoId &&
+          ag.status === 'confirmado' &&
+          ag.data >= dataInicio && 
+          ag.data <= dataFim
+        );
+      });
+
+      let faturamentoTotal = 0;
+      const servicosMap = new Map();
+
+      agendamentosFiltrados.forEach(ag => {
+        const valorUnitario = extrairValorServico(ag.servico);
+        const nomeServico = ag.servico.split('-')[0].trim();
+        
+        if (servicosMap.has(nomeServico)) {
+          const servico = servicosMap.get(nomeServico);
+          servico.quantidade += 1;
+          servico.valorTotal += valorUnitario;
+        } else {
+          servicosMap.set(nomeServico, {
+            valorUnitario: valorUnitario,
+            quantidade: 1,
+            valorTotal: valorUnitario
+          });
+        }
+        
+        faturamentoTotal += valorUnitario;
+      });
+
+      let html = `
+        <div class="resumo-faturamento">
+          <div class="resumo-item">
+            <strong>Período:</strong> ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}
+          </div>
+          <div class="resumo-item">
+            <strong>Total de Agendamentos:</strong> ${agendamentosFiltrados.length}
+          </div>
+          <div class="resumo-item">
+            <strong>Faturamento Total:</strong> ${formatarMoeda(faturamentoTotal)}
+          </div>
+        </div>
+
+        <h3>Detalhamento por Serviço</h3>
+        <table class="tabela-relatorio">
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Valor Unitário</th>
+              <th>Quantidade</th>
+              <th>Valor Total</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      servicosMap.forEach((dados, nome) => {
+        html += `
+          <tr>
+            <td>${nome}</td>
+            <td>${formatarMoeda(dados.valorUnitario)}</td>
+            <td>${dados.quantidade}</td>
+            <td>${formatarMoeda(dados.valorTotal)}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          <tr style="font-weight: bold; background-color: #333;">
+            <td>TOTAL GERAL</td>
+            <td>-</td>
+            <td>${agendamentosFiltrados.length}</td>
+            <td>${formatarMoeda(faturamentoTotal)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Últimos Agendamentos</h3>
+      <table class="tabela-relatorio">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+
+      agendamentosFiltrados
+        .slice(0, 10)
+        .forEach(ag => {
+          html += `
+            <tr>
+              <td>${formatarDataBrasileira(ag.data)}</td>
+              <td>${ag.nome}</td>
+              <td>${ag.servico.split('-')[0].trim()}</td>
+              <td>${ag.servico.match(/R\$\s*[\d,]+/)?.[0] || 'N/A'}</td>
+            </tr>
+          `;
+        });
+
+      html += `</tbody></table>`;
+
+      document.getElementById('resultado-relatorio').innerHTML = html;
+      document.getElementById('botoes-exportacao').style.display = 'flex';
+    }
+
+    async function exportarParaPDF() {
+      if (typeof jsPDF === 'undefined') {
+        await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+        await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js');
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salao = saloes.find(s => s.id === currentUser.salaoId);
+      
+      doc.setFontSize(18);
+      doc.text(`Relatório - ${salao.nome}`, 14, 15);
+      doc.setFontSize(12);
+      doc.text(`Período: ${formatarDataSimples(dataInicio)} a ${formatarDataSimples(dataFim)}`, 14, 22);
+
+      doc.autoTable({
+        startY: 30,
+        head: [['Resumo do Período', '']],
+        body: [
+          ['Total de Agendamentos', document.querySelector('.resumo-item:nth-child(2)').textContent.replace('Total de Agendamentos:', '').trim()],
+          ['Faturamento Total', document.querySelector('.resumo-item:nth-child(3)').textContent.replace('Faturamento Total:', '').trim()]
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [255, 215, 0] }
+      });
+
+      const servicosData = [];
+      document.querySelectorAll('.tabela-relatorio:first-of-type tbody tr').forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length === 4) {
+          servicosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent, cols[3].textContent]);
+        }
+      });
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 10,
+        head: [['Serviço', 'Valor Unitário', 'Quantidade', 'Faturamento']],
+        body: servicosData,
+        theme: 'grid',
+        headStyles: { fillColor: [255, 215, 0] }
+      });
+
+      const agendamentosData = [];
+      document.querySelectorAll('.tabela-relatorio:last-of-type tbody tr').forEach(row => {
+        const cols = row.querySelectorAll('td');
+        agendamentosData.push([cols[0].textContent, cols[1].textContent, cols[2].textContent, cols[3].textContent]);
+      });
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 10,
+        head: [['Data', 'Cliente', 'Serviço', 'Valor']],
+        body: agendamentosData,
+        theme: 'grid',
+        headStyles: { fillColor: [255, 215, 0] }
+      });
+
+      doc.setFontSize(10);
+      doc.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`, 14, doc.internal.pageSize.height - 10);
+
+      doc.save(`relatorio_${salao.nome}_${dataInicio}_a_${dataFim}.pdf`);
+    }
+
+    function exportarParaCSV() {
+      const dataInicio = document.getElementById('data-inicio').value;
+      const dataFim = document.getElementById('data-fim').value;
+      const salaoId = currentUser.salaoId;
+      
+      const agendamentosFiltrados = agendamentos.filter(ag => {
+        return (
+          ag.salaoId === salaoId &&
+          ag.status === 'confirmado' &&
+          ag.data >= dataInicio && 
+          ag.data <= dataFim
+        );
+      });
+
+      let csv = 'Nome,Telefone,Serviço,Data,Hora,Valor\n';
+      
+      agendamentosFiltrados.forEach(ag => {
+        const valor = ag.servico.match(/R\$\s*[\d,]+/)?.[0] || '0';
+        csv += `"${ag.nome}","${ag.telefone}","${ag.servico.split('-')[0].trim()}","${formatarDataSimples(ag.data)}","${ag.hora}","${valor}"\n`;
+      });
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `clientes_${formatarDataSimples(dataInicio)}_a_${formatarDataSimples(dataFim)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function carregarScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    // ▼▼▼▼▼▼ CONFIGURAÇÕES INICIAIS ▼▼▼▼▼▼
+    document.getElementById('use-api').addEventListener('change', async function() {
+      useAPI = this.checked;
+      document.getElementById('api-status').textContent = useAPI 
+        ? 'Modo online (JSONBin.io)' 
+        : 'Modo offline (IndexedDB)';
+    });
+
+    document.getElementById('filtrar-data').addEventListener('change', async function() {
+      if (currentUser && currentUser.role === 'salao') {
+        await carregarAgendamentosSalao(currentUser.salaoId);
+      }
+    });
   </script>
 </body>
 </html>
